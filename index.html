@@ -101,12 +101,11 @@
         .iok{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--green)}
         .iok::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green)}
 
-        /* CANVAS CARD */
-        #canvasCard{position:fixed;top:68px;left:322px;right:16px;z-index:100;padding:16px;opacity:0;transform:translateY(-8px);transition:all .4s cubic-bezier(.16,1,.3,1) .08s}
-        #canvasCard.vis{opacity:1;transform:translateY(0)}
-        #conicCanvas{width:100%;border-radius:8px;display:block}
-        .fml{text-align:center;margin-top:9px;font-size:17px;font-family:'Space Mono',monospace;letter-spacing:1px}
-        .fdet{text-align:center;font-size:11px;color:var(--txt2);margin-top:4px;letter-spacing:.7px}
+        /* FORMULA CARD (detail) */
+        #formulaCard{position:fixed;top:68px;left:322px;right:16px;z-index:100;padding:20px 22px;opacity:0;transform:translateY(-8px);transition:all .4s cubic-bezier(.16,1,.3,1) .08s}
+        #formulaCard.vis{opacity:1;transform:translateY(0)}
+        .fml{text-align:center;font-size:22px;font-family:'Space Mono',monospace;letter-spacing:1px;margin-bottom:8px}
+        .fdet{text-align:center;font-size:11px;color:var(--txt2);letter-spacing:.7px}
 
         /* EXPLANATION */
         #expCard{position:fixed;top:238px;left:16px;width:290px;z-index:100;padding:16px 20px;opacity:0;transform:translateY(8px);transition:all .4s cubic-bezier(.16,1,.3,1) .12s}
@@ -145,7 +144,7 @@
             #detCard{left:14px;width:auto;right:14px}
             #controls{right:14px;width:auto}
             #infoCard{right:16px;width:auto}
-            #canvasCard{left:16px;top:244px;right:16px}
+            #formulaCard{left:16px;top:244px;right:16px}
             #expCard{display:none}
         }
     </style>
@@ -229,8 +228,7 @@
         <div class="iok">Calcolato con precisione matematica esatta</div>
     </div>
 
-    <div id="canvasCard" class="glass">
-        <canvas id="conicCanvas" width="500" height="300"></canvas>
+    <div id="formulaCard" class="glass">
         <div class="fml" id="fml"></div>
         <div class="fdet" id="fdet"></div>
     </div>
@@ -641,22 +639,22 @@ function openDetail(){
         row.querySelector(`#sl_${pm.id}`).addEventListener('input',function(){
             p[pm.id]=parseFloat(this.value);
             document.getElementById(`sv_${pm.id}`).textContent=p[pm.id].toFixed(2);
-            syncDetailUI(); drawCanvas();
+            syncDetailUI(); renderAR();
         });
     });
 
     setTimeout(()=>{
-        ['infoCard','canvasCard','expCard','varsCard','cta'].forEach(id=>document.getElementById(id).classList.add('vis'));
+        ['infoCard','formulaCard','expCard','varsCard','cta'].forEach(id=>document.getElementById(id).classList.add('vis'));
     },40);
 
-    syncDetailUI(); drawCanvas();
+    syncDetailUI(); renderAR();
 }
 
 function closeDetail(){
     state.phase='explore'; state.animating=false;
     document.getElementById('btnAnim').textContent='→ Anima la curva';
     document.getElementById('btnAnim').classList.remove('stop');
-    ['infoCard','canvasCard','expCard','varsCard','cta'].forEach(id=>document.getElementById(id).classList.remove('vis'));
+    ['infoCard','formulaCard','expCard','varsCard','cta'].forEach(id=>document.getElementById(id).classList.remove('vis'));
     document.getElementById('detailView').classList.remove('vis');
     if(state.visible) showExploreUI();
     renderAR();
@@ -680,7 +678,7 @@ function setupDetailCtrl(){
             if(sl)sl.value=pm.def;
             if(sv)sv.textContent=pm.def.toFixed(2);
         });
-        syncDetailUI(); drawCanvas();
+        syncDetailUI(); renderAR();
     };
     document.getElementById('btnAnim').onclick=function(){
         state.animating=!state.animating;
@@ -841,11 +839,17 @@ function renderAR(){
     const wrap=document.createElement('a-entity');
     wrap.setAttribute('rotation',`0 ${state.touch.rotY} 0`);
     wrap.setAttribute('scale',`${sc} ${sc} ${sc}`);
+    /* Alzato di 0.25 unità in Y: il bicono emerge dal marker verso l'alto */
+    wrap.setAttribute('position','0 0.25 0');
     scene3d.appendChild(wrap);
 
-    buildBicone(wrap);
-    buildPlane(wrap);
-    buildIntersection(wrap);
+    if(state.phase==='explore'){
+        buildBicone(wrap);
+        buildPlane(wrap);
+        buildIntersection(wrap);
+    } else {
+        buildConicDetail(wrap);
+    }
 }
 
 /* ---- 1. BICONO ---- */
@@ -928,53 +932,38 @@ function buildPlane(parent){
     const cosA=Math.cos(a), sinA=Math.sin(a);
     const col=CONIC_COLORS[state.conic];
 
-    // Centro del piano
+    /* Centro del piano: C = d·n = (0, d·cos(a), -d·sin(a)) */
     const Cy= d*cosA;
     const Cz=-d*sinA;
 
-    /* A-Frame: a-plane di default giace sul piano XY (normale +Z).
-       Per ottenere normale n=(0,cos(a),-sin(a)):
-       - La normale target ruota di 'a' gradi attorno all'asse X dal +Y
-       - rotation.x = -(90 - a_deg) = a_deg - 90  [A-Frame ruota il piano, non la normale]
-       - Poi sposto il piano in posizione C */
-    const aDeg = a * 180 / Math.PI;
-    const plane=document.createElement('a-plane');
-    plane.setAttribute('position', `0 ${Cy} ${Cz}`);
-    plane.setAttribute('rotation', `${aDeg-90} 0 0`);
-    plane.setAttribute('width',  '0.55');
-    plane.setAttribute('height', '0.55');
-    plane.setAttribute('color',  '#c0d8ff');
-    plane.setAttribute('opacity','0.18');
-    plane.setAttribute('shader', 'flat');
-    plane.setAttribute('side',   'double');
-    parent.appendChild(plane);
-
-    /* Bordo del piano: i 4 angoli del rettangolo nel sistema di riferimento locale
-       poi trasformati in world-space.
-       Locale: centro C, assi u=(1,0,0), v=(0,sinA,cosA), half=0.275
-       Angoli: C ± 0.275*u ± 0.275*v */
-    const H2=0.275;
+    /*
+     * SOLO il bordo del piano secante — nessun a-plane riempito.
+     * Il rettangolo è definito dai 4 angoli calcolati in world-space:
+     *   u = (1, 0, 0)             [asse X nel piano]
+     *   v = (0, sin(a), cos(a))   [secondo asse nel piano]
+     *   half = 0.30 (metà lato)
+     * Angolo i: C ± half*u ± half*v
+     */
+    const half=0.30;
     const corners=[
-        {lu:-H2,lv:-H2},{lu:H2,lv:-H2},{lu:H2,lv:H2},{lu:-H2,lv:H2}
+        {lu:-half, lv:-half},
+        {lu: half, lv:-half},
+        {lu: half, lv: half},
+        {lu:-half, lv: half}
     ].map(({lu,lv})=>({
         x: lu,
-        y: Cy  + lv*sinA,
-        z: Cz  + lv*cosA
+        y: Cy + lv*sinA,
+        z: Cz + lv*cosA
     }));
 
-    // Bordo colorato (4 lati)
+    /* 4 lati del bordo */
     for(let i=0;i<4;i++){
         const A2=corners[i], B=corners[(i+1)%4];
         line(parent, A2.x,A2.y,A2.z, B.x,B.y,B.z, col, 0.95);
     }
-
-    /* Indicatore della normale (vettore perpendicolare al piano) */
-    const nLen=0.10;
-    line(parent, 0,Cy,Cz, 0, Cy+nLen*cosA, Cz-nLen*sinA, '#ffffff', 0.4);
-    const sp=document.createElement('a-sphere');
-    sp.setAttribute('position',`0 ${Cy+nLen*cosA} ${Cz-nLen*sinA}`);
-    sp.setAttribute('radius','0.010'); sp.setAttribute('color','#ffffff');
-    sp.setAttribute('shader','flat'); parent.appendChild(sp);
+    /* 2 diagonali tratteggiati (riempimento visivo leggero senza a-plane) */
+    line(parent, corners[0].x,corners[0].y,corners[0].z, corners[2].x,corners[2].y,corners[2].z, col, 0.15);
+    line(parent, corners[1].x,corners[1].y,corners[1].z, corners[3].x,corners[3].y,corners[3].z, col, 0.15);
 }
 
 /* ---- 3. CURVA DI INTERSEZIONE ----
@@ -1045,6 +1034,133 @@ function line(parent,x1,y1,z1,x2,y2,z2,col,op){
 }
 
 /* ================================================================
+   FASE DETTAGLIO — CONICA 3D SUL MARKER
+   
+   La curva è disegnata verticalmente sul piano XY (z=0),
+   scalata con SCALE unità AR per punto matematico.
+   Griglia, assi, curva principale con glow, punti speciali.
+   ================================================================ */
+function buildConicDetail(parent){
+    const key=state.conic, c=CONICS[key], p=state.params[key], col=c.color;
+    const SCALE=0.065;  // unità AR per unità matematica
+    const BASE_Y=0.0;   // la conica parte dal piano del marker
+
+    /* ---- PIANO BASE ---- */
+    const basePlane=document.createElement('a-plane');
+    basePlane.setAttribute('position','0 0.001 0');
+    basePlane.setAttribute('rotation','-90 0 0');
+    basePlane.setAttribute('width','0.95');
+    basePlane.setAttribute('height','0.95');
+    basePlane.setAttribute('color','#080e1e');
+    basePlane.setAttribute('opacity','0.55');
+    basePlane.setAttribute('shader','flat');
+    basePlane.setAttribute('side','double');
+    parent.appendChild(basePlane);
+
+    /* ---- GRIGLIA ---- */
+    const GS=0.42, STEP=0.09;
+    for(let i=-GS;i<=GS+0.001;i+=STEP){
+        const ii=parseFloat(i.toFixed(4));
+        line(parent, ii,0.002,-GS, ii,0.002,GS,  '#ffffff',0.05);
+        line(parent, -GS,0.002,ii, GS,0.002,ii,  '#ffffff',0.05);
+    }
+
+    /* ---- ASSI ---- */
+    line(parent, -GS,0.003,0, GS,0.003,0,  '#ffffff',0.18);
+    line(parent, 0,0.003,-GS, 0,0.003,GS,  '#ffffff',0.18);
+
+    /* ---- CURVA 3D ----
+       La curva è sul piano XZ (y=costante=BASE_Y+offset_y_matematico*SCALE)
+       ma orientata verticalmente: l'asse matematico Y → asse AR Y,
+       l'asse matematico X → asse AR X, z=0.
+       Così la curva "emerge" verticalmente dal marker come in foto.
+    */
+    const subcurves=c.getPts(p);
+
+    subcurves.forEach(sub=>{
+        // Filtra punti validi e con coordinate sensate
+        const valid=sub.filter(pt=>isFinite(pt.x)&&isFinite(pt.y)&&Math.abs(pt.y)<8&&Math.abs(pt.x)<8);
+        if(valid.length<2) return;
+
+        /* GLOW — sfere rade, bassa opacità */
+        for(let i=0;i<valid.length;i+=5){
+            const pt=valid[i];
+            const g=document.createElement('a-sphere');
+            g.setAttribute('position',`${pt.x*SCALE} ${BASE_Y+pt.y*SCALE} 0`);
+            g.setAttribute('radius','0.035');
+            g.setAttribute('color',col);
+            g.setAttribute('opacity','0.18');
+            g.setAttribute('shader','flat');
+            parent.appendChild(g);
+        }
+
+        /* CURVA PRINCIPALE — segmenti continui */
+        for(let i=0;i<valid.length-1;i++){
+            const A2=valid[i], B=valid[i+1];
+            const dx=(B.x-A2.x)*SCALE, dy=(B.y-A2.y)*SCALE;
+            if(dx*dx+dy*dy > 0.06*0.06) continue; // salta salti grandi (iperbole)
+            line(parent,
+                A2.x*SCALE, BASE_Y+A2.y*SCALE, 0,
+                B.x*SCALE,  BASE_Y+B.y*SCALE,  0,
+                col, 1.0);
+        }
+    });
+
+    /* ---- PUNTI SPECIALI ---- */
+
+    // PARABOLA: vertice (punto giallo) + asse di simmetria tratteggiato
+    if(key==='parabola' && Math.abs(p.a)>0.001){
+        const vx=-p.b/(2*p.a);
+        const vy=p.a*vx*vx+p.b*vx+p.c;
+        if(Math.abs(vx)<7 && Math.abs(vy)<7){
+            // Alone
+            const ga=document.createElement('a-sphere');
+            ga.setAttribute('position',`${vx*SCALE} ${BASE_Y+vy*SCALE} 0`);
+            ga.setAttribute('radius','0.055'); ga.setAttribute('color','#fbbf24');
+            ga.setAttribute('opacity','0.30'); ga.setAttribute('shader','flat');
+            parent.appendChild(ga);
+            // Punto vertice
+            const vsp=document.createElement('a-sphere');
+            vsp.setAttribute('position',`${vx*SCALE} ${BASE_Y+vy*SCALE} 0`);
+            vsp.setAttribute('radius','0.028'); vsp.setAttribute('color','#fbbf24');
+            vsp.setAttribute('shader','flat'); parent.appendChild(vsp);
+            // Asse di simmetria (linea verticale tratteggiata)
+            line(parent, vx*SCALE,0.003,0.001, vx*SCALE,BASE_Y+vy*SCALE+0.30,0.001, '#fbbf24',0.25);
+        }
+    }
+
+    // ELLISSE: fuochi
+    if(key==='ellipse'){
+        const fc=Math.sqrt(Math.max(0,p.a*p.a-p.b*p.b));
+        [fc,-fc].forEach(fx=>{
+            if(Math.abs(fx)>7) return;
+            const fs=document.createElement('a-sphere');
+            fs.setAttribute('position',`${fx*SCALE} ${BASE_Y} 0`);
+            fs.setAttribute('radius','0.022'); fs.setAttribute('color','#f59e0b');
+            fs.setAttribute('shader','flat'); parent.appendChild(fs);
+        });
+    }
+
+    // IPERBOLE: asintoti
+    if(key==='hyperbola'){
+        const sl=p.b/p.a;
+        const ext=GS;
+        // y = ±(b/a)*x → in AR: arY = BASE_Y + math_y*SCALE
+        line(parent, -ext, BASE_Y+(-ext/SCALE)*sl*SCALE,0, ext, BASE_Y+(ext/SCALE)*sl*SCALE,0, '#f59e0b',0.22);
+        line(parent, -ext, BASE_Y+(ext/SCALE)*sl*SCALE,0,  ext, BASE_Y+(-ext/SCALE)*sl*SCALE,0,'#f59e0b',0.22);
+    }
+
+    // CERCHIO: centro + raggio
+    if(key==='circle'){
+        const cs=document.createElement('a-sphere');
+        cs.setAttribute('position',`0 ${BASE_Y} 0`);
+        cs.setAttribute('radius','0.018'); cs.setAttribute('color','#93c5fd');
+        cs.setAttribute('shader','flat'); parent.appendChild(cs);
+        line(parent, 0,BASE_Y+0.001,0, p.r*SCALE,BASE_Y+0.001,0, '#93c5fd',0.4);
+    }
+}
+
+/* ================================================================
    ANIMATION LOOP
    ================================================================ */
 function loop(){
@@ -1072,7 +1188,9 @@ function loop(){
             if(sl)sl.value=p[pm.id];
             if(sv)sv.textContent=p[pm.id].toFixed(2);
         });
-        syncDetailUI(); drawCanvas();
+        syncDetailUI();
+        /* Throttle: renderAR ogni 3 frame per non sovraccaricare AR.js */
+        if(frameCount%3===0) renderAR();
     }
 
     requestAnimationFrame(loop);
