@@ -3,1542 +3,1087 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <title>Coniche AR - Laboratorio Interattivo</title>
-    
+    <title>Coniche AR</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.5/aframe/build/aframe-ar.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
     <style>
         :root {
-            --bg-primary: #060610;
-            --bg-card: rgba(12, 14, 26, 0.93);
-            --bg-card-light: rgba(20, 24, 40, 0.88);
-            --border-color: rgba(255, 255, 255, 0.07);
-            --border-light: rgba(255, 255, 255, 0.12);
-            --text-primary: #f0f2ff;
-            --text-secondary: rgba(200, 210, 255, 0.6);
-            --text-muted: rgba(200, 210, 255, 0.38);
-            --accent-blue: #3b82f6;
-            --accent-green: #22c55e;
-            --accent-purple: #a855f7;
-            --accent-orange: #f59e0b;
-            --accent-cyan: #06b6d4;
-            --color-circle:    #3b82f6;
-            --color-ellipse:   #8b5cf6;
-            --color-parabola:  #06b6d4;
-            --color-hyperbola: #f59e0b;
+            --bg-card:   rgba(10,12,24,0.92);
+            --border:    rgba(255,255,255,0.08);
+            --txt:       #f0f2ff;
+            --txt2:      rgba(200,210,255,0.55);
+            --txt3:      rgba(200,210,255,0.32);
+            --cyan:      #06b6d4;
+            --blue:      #3b82f6;
+            --purple:    #8b5cf6;
+            --orange:    #f59e0b;
+            --green:     #22c55e;
+            --col-C:     #3b82f6;
+            --col-E:     #8b5cf6;
+            --col-P:     #06b6d4;
+            --col-H:     #f59e0b;
         }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Space Grotesk', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            overflow: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        /* ===== GLASSMORPHISM CARDS ===== */
-        .card {
-            background: var(--bg-card);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-        }
-        .card-light {
-            background: var(--bg-card-light);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Space Grotesk',sans-serif;background:#05050f;color:var(--txt);overflow:hidden;-webkit-font-smoothing:antialiased}
+        .glass{background:var(--bg-card);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--border);border-radius:14px}
+        .glass-light{background:rgba(18,22,40,0.85);border:1px solid rgba(255,255,255,0.11);border-radius:10px}
 
-        /* ===== TOP BAR ===== */
-        .top-bar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 1000;
-            padding: 14px 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .mode-badge {
-            padding: 9px 18px;
-            border-radius: 100px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            display: flex; align-items: center; gap: 9px;
-        }
-        .mode-badge .dot {
-            width: 7px; height: 7px; border-radius: 50%;
-            animation: pulse 1.8s infinite;
-        }
-        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
-        
-        .btn-icon {
-            width: 42px; height: 42px;
-            display: flex; align-items: center; justify-content: center;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            color: var(--text-primary);
-            font-size: 17px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-        .btn-icon:active { transform: scale(0.92); }
-        .btn-icon.accent { background: var(--accent-cyan); border: none; }
-        
-        /* ===== STATUS OVERLAY ===== */
-        .status-overlay {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 500;
-            text-align: center;
-            transition: opacity 0.5s;
-            pointer-events: none;
-        }
-        .status-overlay.hidden { opacity: 0; }
-        .status-icon {
-            width: 72px; height: 72px; margin: 0 auto 16px;
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 18px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 32px;
-        }
-        .status-title { font-size: 18px; font-weight: 600; margin-bottom: 7px; }
-        .status-subtitle { font-size: 13px; color: var(--text-secondary); max-width: 240px; line-height: 1.5; }
+        /* TOP BAR */
+        #topBar{position:fixed;top:0;left:0;right:0;z-index:1000;padding:13px 16px;display:flex;justify-content:space-between;align-items:center}
+        .badge{padding:8px 16px;border-radius:100px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;display:flex;align-items:center;gap:8px}
+        .dot{width:7px;height:7px;border-radius:50%;animation:pulse 1.8s infinite}
+        @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(.8)}}
+        .iconBtn{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--bg-card);border:1px solid var(--border);border-radius:50%;color:var(--txt);font-size:16px;cursor:pointer;font-family:inherit;transition:transform .15s}
+        .iconBtn:active{transform:scale(.9)}
+        .iconBtn.acc{background:var(--cyan);border:none}
 
-        /* ===== TOUCH HINT ===== */
-        .touch-hint {
-            position: fixed;
-            bottom: 96px; left: 50%;
-            transform: translateX(-50%);
-            z-index: 600;
-            padding: 9px 16px;
-            border-radius: 100px;
-            font-size: 11px; font-weight: 500;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        .touch-hint.visible { opacity: 1; }
+        /* STATUS */
+        #statusOverlay{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:500;text-align:center;transition:opacity .5s;pointer-events:none}
+        #statusOverlay.hidden{opacity:0}
+        .statusIcon{width:68px;height:68px;margin:0 auto 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px}
+        .statusTitle{font-size:17px;font-weight:600;margin-bottom:6px}
+        .statusSub{font-size:13px;color:var(--txt2);max-width:230px;line-height:1.5}
 
-        /* ===== FASE 1: ESPLORAZIONE ===== */
-        .explore-detection {
-            position: fixed;
-            top: 74px; right: 16px;
-            z-index: 100; padding: 18px 22px; width: 290px;
-            opacity: 0; transform: translateY(-8px);
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-        }
-        .explore-detection.visible { opacity: 1; transform: translateY(0); }
-        
-        .detection-tag {
-            display: inline-block; padding: 5px 11px;
-            border-radius: 6px; font-size: 10px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px;
-            font-family: 'Space Mono', monospace;
-        }
-        .detection-tag.circle    { background: rgba(59,130,246,.15); color: var(--color-circle); }
-        .detection-tag.ellipse   { background: rgba(139,92,246,.15); color: var(--color-ellipse); }
-        .detection-tag.parabola  { background: rgba(6,182,212,.15);  color: var(--color-parabola); }
-        .detection-tag.hyperbola { background: rgba(245,158,11,.15); color: var(--color-hyperbola); }
-        
-        .detection-title    { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .detection-subtitle { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
-        .detection-formula  {
-            font-size: 17px; font-weight: 400; padding: 10px 14px;
-            background: rgba(255,255,255,.04); border-radius: 9px;
-            text-align: center; font-family: 'Space Mono', monospace; letter-spacing: 1px;
-        }
-        
-        /* ===== CONTROLLI PIANO ===== */
-        .plane-controls {
-            position: fixed;
-            bottom: 96px; left: 16px;
-            z-index: 100; padding: 18px 22px; width: 290px;
-            opacity: 0; transform: translateY(8px);
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-        }
-        .plane-controls.visible { opacity: 1; transform: translateY(0); }
-        
-        .control-label {
-            font-size: 10px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 1.2px;
-            color: var(--text-muted); margin-bottom: 7px;
-            display: flex; justify-content: space-between;
-        }
-        .ctrl-slider {
-            width: 100%; -webkit-appearance: none;
-            height: 4px; background: rgba(255,255,255,.1);
-            border-radius: 2px; margin-bottom: 14px; cursor: pointer;
-        }
-        .ctrl-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 20px; height: 20px;
-            background: #fff; border-radius: 50%; cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,.35);
-        }
-        
-        .conic-hints {
-            display: grid; grid-template-columns: repeat(4,1fr); gap: 7px;
-            padding-top: 12px; border-top: 1px solid var(--border-color);
-        }
-        .hint-item {
-            text-align: center; padding: 9px 3px; border-radius: 9px;
-            background: rgba(255,255,255,.03); cursor: pointer;
-            border: 1px solid transparent; transition: all 0.18s;
-            user-select: none;
-        }
-        .hint-item.active.circle    { background: rgba(59,130,246,.12); border-color: var(--color-circle); }
-        .hint-item.active.ellipse   { background: rgba(139,92,246,.12); border-color: var(--color-ellipse); }
-        .hint-item.active.parabola  { background: rgba(6,182,212,.12);  border-color: var(--color-parabola); }
-        .hint-item.active.hyperbola { background: rgba(245,158,11,.12); border-color: var(--color-hyperbola); }
-        .hint-icon  { font-size: 16px; margin-bottom: 3px; }
-        .hint-name  { font-size: 8px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); }
-        
-        /* ===== BOTTONE ESPLORA ===== */
-        .explore-btn {
-            position: fixed; bottom: 18px; left: 16px; right: 16px;
-            z-index: 100; padding: 17px;
-            border: none; border-radius: 13px;
-            font-family: inherit; font-size: 15px; font-weight: 600;
-            color: white; cursor: pointer;
-            opacity: 0; transform: translateY(8px);
-            transition: all 0.3s; letter-spacing: 0.3px;
-        }
-        .explore-btn.visible { opacity: 1; transform: translateY(0); }
-        .explore-btn:active  { transform: translateY(1px) scale(0.99); }
+        /* TOUCH HINT */
+        #touchHint{position:fixed;bottom:92px;left:50%;transform:translateX(-50%);z-index:600;padding:8px 15px;border-radius:100px;font-size:11px;font-weight:500;color:var(--txt2);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .5s}
+        #touchHint.vis{opacity:1}
 
-        /* ===== FASE 2: DETTAGLIO ===== */
-        .detail-view {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 2000;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.4s;
-        }
-        .detail-view.visible { opacity: 1; pointer-events: auto; }
-        
-        .btn-back {
-            display: flex; align-items: center; gap: 7px;
-            padding: 9px 15px; background: var(--bg-card);
-            border: 1px solid var(--border-color); border-radius: 100px;
-            color: var(--text-primary); font-family: inherit;
-            font-size: 13px; font-weight: 500; cursor: pointer;
-        }
+        /* DETECTION CARD */
+        #detCard{position:fixed;top:70px;right:14px;z-index:100;padding:16px 20px;width:280px;opacity:0;transform:translateY(-8px);transition:all .4s cubic-bezier(.16,1,.3,1)}
+        #detCard.vis{opacity:1;transform:translateY(0)}
+        .dtag{display:inline-block;padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:9px;font-family:'Space Mono',monospace}
+        .dname{font-size:22px;font-weight:700;margin-bottom:4px}
+        .dsub{font-size:11px;color:var(--txt2);margin-bottom:11px;line-height:1.4}
+        .deq{font-size:15px;padding:9px 13px;background:rgba(255,255,255,.04);border-radius:8px;text-align:center;font-family:'Space Mono',monospace}
 
-        /* ===== REACTION BADGE ===== */
-        .reaction-card {
-            position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
-            z-index: 1001; padding: 7px 18px;
-            display: flex; align-items: center; gap: 11px;
-            white-space: nowrap;
-        }
-        .reaction-dot {
-            width: 9px; height: 9px; border-radius: 50%;
-        }
-        .reaction-label {
-            font-size: 10px; font-weight: 600; text-transform: uppercase;
-            letter-spacing: 0.8px; color: var(--text-muted);
-        }
-        .reaction-value { font-size: 14px; font-weight: 600; font-family: 'Space Mono', monospace; }
+        /* CONTROLS */
+        #controls{position:fixed;bottom:90px;left:14px;z-index:100;padding:16px 20px;width:280px;opacity:0;transform:translateY(8px);transition:all .4s cubic-bezier(.16,1,.3,1)}
+        #controls.vis{opacity:1;transform:translateY(0)}
+        .clabel{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--txt3);margin-bottom:6px;display:flex;justify-content:space-between}
+        .cval{font-weight:700}
+        .cslider{width:100%;-webkit-appearance:none;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin-bottom:13px;cursor:pointer}
+        .cslider::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:#fff;border-radius:50%;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+        .hints{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding-top:11px;border-top:1px solid var(--border)}
+        .hitem{text-align:center;padding:8px 3px;border-radius:9px;background:rgba(255,255,255,.03);cursor:pointer;border:1px solid transparent;transition:all .18s;user-select:none}
+        .hitem.on{background:rgba(255,255,255,.07)}
+        .hitem.on[data-c=circle]   {border-color:var(--col-C)}
+        .hitem.on[data-c=ellipse]  {border-color:var(--col-E)}
+        .hitem.on[data-c=parabola] {border-color:var(--col-P)}
+        .hitem.on[data-c=hyperbola]{border-color:var(--col-H)}
+        .hico{font-size:15px;margin-bottom:2px}
+        .hnm{font-size:8px;font-weight:600;text-transform:uppercase;color:var(--txt2)}
 
-        /* ===== INFO CARD ===== */
-        .info-card {
-            position: fixed; top: 72px; left: 18px;
-            z-index: 100; padding: 18px 22px; width: 300px;
-            opacity: 0; transform: translateY(-8px);
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-        }
-        .info-card.visible { opacity: 1; transform: translateY(0); }
-        .info-tag {
-            display: inline-block; padding: 5px 11px; border-radius: 6px;
-            font-size: 10px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 1.2px; margin-bottom: 14px;
-        }
-        .info-header { display: flex; align-items: center; gap: 11px; margin-bottom: 7px; }
-        .info-icon  { font-size: 26px; }
-        .info-title { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
-        .info-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.4; }
-        .info-accuracy {
-            display: inline-flex; align-items: center; gap: 7px;
-            font-size: 12px; font-weight: 500; color: var(--accent-green);
-        }
-        .info-accuracy::before {
-            content: ''; width: 7px; height: 7px;
-            background: var(--accent-green); border-radius: 50%;
-            box-shadow: 0 0 7px var(--accent-green);
-        }
+        /* EXPLORE BTN */
+        #exploreBtn{position:fixed;bottom:16px;left:14px;right:14px;z-index:100;padding:16px;border:none;border-radius:12px;font-family:inherit;font-size:15px;font-weight:600;color:#fff;cursor:pointer;opacity:0;transform:translateY(8px);transition:all .3s;letter-spacing:.3px}
+        #exploreBtn.vis{opacity:1;transform:translateY(0)}
+        #exploreBtn:active{transform:translateY(1px) scale(.99)}
 
-        /* ===== CANVAS CONICA (detail view) ===== */
-        .canvas-card {
-            position: fixed; top: 72px; left: 336px; right: 18px;
-            z-index: 100; padding: 18px;
-            opacity: 0; transform: translateY(-8px);
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1) 0.08s;
-        }
-        .canvas-card.visible { opacity: 1; transform: translateY(0); }
-        .canvas-card canvas { 
-            width: 100%; 
-            border-radius: 8px; 
-            display: block;
-        }
-        .formula-overlay {
-            text-align: center; margin-top: 10px;
-            font-size: 19px; font-family: 'Space Mono', monospace;
-            letter-spacing: 1px; font-weight: 400;
-        }
-        .formula-detail {
-            text-align: center; font-size: 12px; color: var(--text-secondary);
-            margin-top: 5px; letter-spacing: 0.8px;
-        }
+        /* ===== DETAIL VIEW ===== */
+        #detailView{position:fixed;top:0;left:0;right:0;bottom:0;z-index:2000;opacity:0;pointer-events:none;transition:opacity .4s}
+        #detailView.vis{opacity:1;pointer-events:auto}
+        .btnBack{display:flex;align-items:center;gap:7px;padding:8px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:100px;color:var(--txt);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer}
 
-        /* ===== EXPLANATION ===== */
-        .explanation-card {
-            position: fixed; top: 248px; left: 18px; width: 300px;
-            z-index: 100; padding: 18px 22px;
-            opacity: 0; transform: translateY(8px);
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1) 0.13s;
-        }
-        .explanation-card.visible { opacity: 1; transform: translateY(0); }
-        .section-label {
-            font-size: 10px; font-weight: 600; text-transform: uppercase;
-            letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 10px;
-        }
-        .explanation-text { font-size: 13px; line-height: 1.65; color: var(--text-primary); }
-        .tip-box {
-            margin-top: 13px; padding: 12px 14px;
-            background: rgba(245,158,11,.08);
-            border: 1px solid rgba(245,158,11,.2);
-            border-radius: 9px; display: flex; gap: 9px;
-        }
-        .tip-text { font-size: 13px; line-height: 1.5; }
-        .tip-text strong { color: var(--accent-orange); }
+        /* REACTION */
+        #rxCard{position:fixed;top:13px;left:50%;transform:translateX(-50%);z-index:1001;padding:6px 16px;display:flex;align-items:center;gap:10px;white-space:nowrap}
+        .rxdot{width:8px;height:8px;border-radius:50%}
+        .rxlbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--txt3)}
+        .rxval{font-size:13px;font-weight:600;font-family:'Space Mono',monospace}
 
-        /* ===== VARIABLES CARD ===== */
-        .variables-card {
-            position: fixed; bottom: 88px; left: 18px; right: 18px;
-            z-index: 100; padding: 18px 22px;
-            opacity: 0; transform: translateY(8px);
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1) 0.18s;
-        }
-        .variables-card.visible { opacity: 1; transform: translateY(0); }
-        .variables-grid { display: grid; gap: 10px; margin-bottom: 14px; }
-        .variables-grid.cols-2 { grid-template-columns: repeat(2,1fr); }
-        .variables-grid.cols-3 { grid-template-columns: repeat(3,1fr); }
-        .variable-item { padding: 13px; text-align: center; }
-        .variable-symbol { font-size: 26px; font-weight: 700; margin-bottom: 5px; font-family: 'Space Mono', monospace; }
-        .variable-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.35; }
-        
-        .sliders-section { padding-top: 13px; border-top: 1px solid var(--border-color); }
-        .slider-row { display: flex; align-items: center; margin-bottom: 12px; }
-        .slider-row:last-child { margin-bottom: 0; }
-        .slider-label { width: 28px; font-size: 16px; font-weight: 700; font-family: 'Space Mono', monospace; }
-        .slider-input {
-            flex: 1; -webkit-appearance: none; height: 4px;
-            background: rgba(255,255,255,.1); border-radius: 2px; margin: 0 14px; cursor: pointer;
-        }
-        .slider-input::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 20px; height: 20px;
-            background: #fff; border-radius: 50%; cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,.4);
-        }
-        .slider-value {
-            width: 52px; text-align: right; font-size: 13px; font-weight: 500;
-            color: var(--text-secondary); font-family: 'Space Mono', monospace;
-        }
+        /* INFO */
+        #infoCard{position:fixed;top:68px;left:16px;z-index:100;padding:16px 20px;width:290px;opacity:0;transform:translateY(-8px);transition:all .4s cubic-bezier(.16,1,.3,1)}
+        #infoCard.vis{opacity:1;transform:translateY(0)}
+        .itag{display:inline-block;padding:5px 10px;border-radius:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px}
+        .ihead{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+        .iico{font-size:24px}
+        .ititle{font-size:24px;font-weight:700;letter-spacing:-.3px}
+        .isub{font-size:12px;color:var(--txt2);margin-bottom:9px;line-height:1.4}
+        .iok{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--green)}
+        .iok::before{content:'';width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green)}
 
-        /* ===== BOTTOM CTA ===== */
-        .bottom-cta {
-            position: fixed; bottom: 18px; left: 18px; right: 18px;
-            z-index: 100;
-            opacity: 0; transform: translateY(8px);
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1) 0.22s;
-        }
-        .bottom-cta.visible { opacity: 1; transform: translateY(0); }
-        .cta-button {
-            width: 100%; padding: 17px; border: none; border-radius: 13px;
-            font-family: inherit; font-size: 15px; font-weight: 600;
-            color: white; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px;
-        }
-        .cta-button:active  { transform: scale(0.99); }
-        .cta-button.is-stop { background: #ef4444 !important; }
+        /* CANVAS CARD */
+        #canvasCard{position:fixed;top:68px;left:322px;right:16px;z-index:100;padding:16px;opacity:0;transform:translateY(-8px);transition:all .4s cubic-bezier(.16,1,.3,1) .08s}
+        #canvasCard.vis{opacity:1;transform:translateY(0)}
+        #conicCanvas{width:100%;border-radius:8px;display:block}
+        .fml{text-align:center;margin-top:9px;font-size:17px;font-family:'Space Mono',monospace;letter-spacing:1px}
+        .fdet{text-align:center;font-size:11px;color:var(--txt2);margin-top:4px;letter-spacing:.7px}
 
-        /* ===== RESPONSIVE TABLET/MOBILE ===== */
-        @media (max-width: 800px) {
-            .explore-detection { left: 16px; width: auto; right: 16px; }
-            .plane-controls    { right: 16px; width: auto; }
-            .info-card         { right: 16px; width: auto; }
-            .canvas-card       { left: 16px; top: 252px; right: 16px; }
-            .explanation-card  { display: none; }
-            .variables-card    { bottom: 88px; }
+        /* EXPLANATION */
+        #expCard{position:fixed;top:238px;left:16px;width:290px;z-index:100;padding:16px 20px;opacity:0;transform:translateY(8px);transition:all .4s cubic-bezier(.16,1,.3,1) .12s}
+        #expCard.vis{opacity:1;transform:translateY(0)}
+        .slbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt3);margin-bottom:9px}
+        .etxt{font-size:13px;line-height:1.65;color:var(--txt)}
+        .tipbox{margin-top:12px;padding:11px 13px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;display:flex;gap:8px}
+        .tiptxt{font-size:12px;line-height:1.5}
+        .tiptxt strong{color:var(--orange)}
+
+        /* VARIABLES */
+        #varsCard{position:fixed;bottom:84px;left:16px;right:16px;z-index:100;padding:16px 20px;opacity:0;transform:translateY(8px);transition:all .4s cubic-bezier(.16,1,.3,1) .17s}
+        #varsCard.vis{opacity:1;transform:translateY(0)}
+        .vgrid{display:grid;gap:9px;margin-bottom:12px}
+        .vgrid.c2{grid-template-columns:repeat(2,1fr)}
+        .vgrid.c3{grid-template-columns:repeat(3,1fr)}
+        .vitem{padding:12px;text-align:center}
+        .vsym{font-size:24px;font-weight:700;margin-bottom:4px;font-family:'Space Mono',monospace}
+        .vdsc{font-size:10px;color:var(--txt2);line-height:1.35}
+        .slidersWrap{padding-top:12px;border-top:1px solid var(--border)}
+        .srow{display:flex;align-items:center;margin-bottom:11px}
+        .srow:last-child{margin-bottom:0}
+        .slbl2{width:26px;font-size:15px;font-weight:700;font-family:'Space Mono',monospace}
+        .sinp{flex:1;-webkit-appearance:none;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin:0 13px;cursor:pointer}
+        .sinp::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:#fff;border-radius:50%;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+        .sval{width:50px;text-align:right;font-size:12px;font-weight:500;color:var(--txt2);font-family:'Space Mono',monospace}
+
+        /* CTA */
+        #cta{position:fixed;bottom:16px;left:16px;right:16px;z-index:100;opacity:0;transform:translateY(8px);transition:all .4s cubic-bezier(.16,1,.3,1) .21s}
+        #cta.vis{opacity:1;transform:translateY(0)}
+        .ctabtn{width:100%;padding:16px;border:none;border-radius:12px;font-family:inherit;font-size:15px;font-weight:600;color:#fff;cursor:pointer;transition:all .2s;letter-spacing:.3px}
+        .ctabtn:active{transform:scale(.99)}
+        .ctabtn.stop{background:#ef4444!important}
+
+        @media(max-width:800px){
+            #detCard{left:14px;width:auto;right:14px}
+            #controls{right:14px;width:auto}
+            #infoCard{right:16px;width:auto}
+            #canvasCard{left:16px;top:244px;right:16px}
+            #expCard{display:none}
         }
     </style>
 </head>
-
 <body>
 
-<!-- ===== FASE 1: ESPLORAZIONE BICONO ===== -->
+<!-- ===== EXPLORE VIEW ===== -->
 <div id="exploreView">
-    <div class="top-bar">
-        <div class="mode-badge card">
-            <span class="dot" style="background:var(--accent-cyan); box-shadow:0 0 9px var(--accent-cyan);"></span>
+    <div id="topBar">
+        <div class="badge glass">
+            <span class="dot" style="background:var(--cyan);box-shadow:0 0 8px var(--cyan)"></span>
             <span>Esplorazione</span>
         </div>
-        <div style="display:flex;gap:9px;">
-            <button class="btn-icon" id="btnResetExplore" title="Reset">↺</button>
-            <button class="btn-icon accent" title="Aiuto">?</button>
+        <div style="display:flex;gap:8px">
+            <button class="iconBtn" id="btnReset" title="Reset">↺</button>
+            <button class="iconBtn acc" title="Info">?</button>
         </div>
     </div>
 
-    <div class="status-overlay" id="statusOverlay">
-        <div class="status-icon">📷</div>
-        <div class="status-title">Inquadra il marker</div>
-        <div class="status-subtitle">Punta la fotocamera sul marker Hiro per esplorare le sezioni coniche in AR</div>
+    <div id="statusOverlay">
+        <div class="statusIcon">📷</div>
+        <div class="statusTitle">Inquadra il marker</div>
+        <div class="statusSub">Punta la fotocamera sul marker Hiro per esplorare le sezioni coniche in AR</div>
     </div>
 
-    <div class="touch-hint card" id="touchHint">
-        ☝ Trascina per ruotare &nbsp;·&nbsp; 🤌 Pizzica zoom &nbsp;·&nbsp; 👆👆 Doppio tap reset
+    <div id="touchHint" class="glass">☝ Trascina per ruotare &nbsp;·&nbsp; 🤌 Pizzica zoom &nbsp;·&nbsp; 👆👆 Reset</div>
+
+    <div id="detCard" class="glass">
+        <div class="dtag" id="dtag">PARABOLA</div>
+        <div class="dname" id="dname">Parabola</div>
+        <div class="dsub"  id="dsub">Piano parallelo a una generatrice</div>
+        <div class="deq"   id="deq">y = ax² + bx + c</div>
     </div>
 
-    <div class="explore-detection card" id="exploreDetection">
-        <div class="detection-tag parabola" id="expTag">PARABOLA</div>
-        <div class="detection-title" id="expTitle" style="color:var(--color-parabola)">Parabola</div>
-        <div class="detection-subtitle" id="expSubtitle">Piano parallelo alla generatrice</div>
-        <div class="detection-formula" id="expFormula">y = ax² + bx + c</div>
-    </div>
-
-    <div class="plane-controls card" id="planeControls">
-        <div class="control-label">
-            <span>Inclinazione Piano (α)</span>
-            <span id="angleValue" style="color:var(--accent-cyan);font-weight:700;">45°</span>
+    <div id="controls" class="glass">
+        <div class="clabel">
+            <span>Inclinazione Piano α</span>
+            <span class="cval" id="aVal" style="color:var(--cyan)">30°</span>
         </div>
-        <input type="range" class="ctrl-slider" id="angleSlider" min="0" max="90" value="45">
+        <input type="range" class="cslider" id="aSlider" min="0" max="90" value="30">
 
-        <div class="control-label">
-            <span>Posizione Piano (h)</span>
-            <span id="posValue" style="color:var(--accent-cyan);font-weight:700;">0.00</span>
+        <div class="clabel">
+            <span>Posizione Piano d</span>
+            <span class="cval" id="dVal" style="color:var(--cyan)">0.08</span>
         </div>
-        <input type="range" class="ctrl-slider" id="posSlider" min="-80" max="80" value="0">
+        <input type="range" class="cslider" id="dSlider" min="5" max="95" value="40">
 
-        <div class="conic-hints">
-            <div class="hint-item circle"    data-conic="circle">   <div class="hint-icon">⭕</div><div class="hint-name">Cerchio</div></div>
-            <div class="hint-item ellipse"   data-conic="ellipse">  <div class="hint-icon">⬭</div><div class="hint-name">Ellisse</div></div>
-            <div class="hint-item parabola active" data-conic="parabola"> <div class="hint-icon">⌒</div><div class="hint-name">Parabola</div></div>
-            <div class="hint-item hyperbola" data-conic="hyperbola"><div class="hint-icon">)(</div><div class="hint-name">Iperbole</div></div>
+        <div class="hints">
+            <div class="hitem" data-c="circle">   <div class="hico">⭕</div><div class="hnm">Cerchio</div></div>
+            <div class="hitem" data-c="ellipse">  <div class="hico">⬭</div><div class="hnm">Ellisse</div></div>
+            <div class="hitem on" data-c="parabola"><div class="hico">⌒</div><div class="hnm">Parabola</div></div>
+            <div class="hitem" data-c="hyperbola"><div class="hico">)(</div><div class="hnm">Iperbole</div></div>
         </div>
     </div>
 
-    <button class="explore-btn" id="exploreBtn" style="background:var(--color-parabola)">
-        Esplora Parabola →
-    </button>
+    <button id="exploreBtn">Esplora Parabola →</button>
 </div>
 
-<!-- ===== FASE 2: DETTAGLIO ===== -->
-<div class="detail-view" id="detailView">
-    <div class="top-bar">
-        <button class="btn-back" id="btnBack">← Torna alle coniche</button>
-        <div style="display:flex;gap:9px;">
-            <button class="btn-icon" id="btnResetDetail" title="Reset parametri">↺</button>
+<!-- ===== DETAIL VIEW ===== -->
+<div id="detailView">
+    <div id="topBar2" style="position:fixed;top:0;left:0;right:0;z-index:1001;padding:13px 16px;display:flex;justify-content:space-between;align-items:center">
+        <button class="btnBack" id="btnBack">← Torna</button>
+        <div style="display:flex;gap:8px">
+            <button class="iconBtn" id="btnResetD" title="Reset">↺</button>
         </div>
     </div>
 
-    <div class="reaction-card card" id="reactionCard">
-        <span class="reaction-dot" id="reactionDot"></span>
-        <span class="reaction-label" id="reactionLabel">Vertice</span>
-        <span class="reaction-value" id="reactionValue" style="color:var(--color-parabola)">V = (0.00, 0.00)</span>
+    <div id="rxCard" class="glass">
+        <span class="rxdot" id="rxdot"></span>
+        <span class="rxlbl" id="rxlbl">Vertice</span>
+        <span class="rxval" id="rxval"></span>
     </div>
 
-    <div class="info-card card" id="infoCard">
-        <div class="info-tag" id="infoTag">Matematica • Funzioni</div>
-        <div class="info-header">
-            <span class="info-icon" id="infoIcon">📐</span>
-            <span class="info-title" id="infoTitle" style="color:var(--color-parabola)">Parabola</span>
+    <div id="infoCard" class="glass">
+        <div class="itag" id="itag"></div>
+        <div class="ihead">
+            <span class="iico" id="iico"></span>
+            <span class="ititle" id="ititle"></span>
         </div>
-        <div class="info-subtitle" id="infoSubtitle">Funzione quadratica — y = ax² + bx + c</div>
-        <div class="info-accuracy">Rilevato con precisione matematica</div>
+        <div class="isub" id="isub"></div>
+        <div class="iok">Calcolato con precisione matematica esatta</div>
     </div>
 
-    <div class="canvas-card card" id="canvasCard">
-        <canvas id="conicCanvas" width="480" height="300"></canvas>
-        <div class="formula-overlay" id="formulaOverlay">y = 1x²</div>
-        <div class="formula-detail" id="formulaDetail"></div>
+    <div id="canvasCard" class="glass">
+        <canvas id="conicCanvas" width="500" height="300"></canvas>
+        <div class="fml" id="fml"></div>
+        <div class="fdet" id="fdet"></div>
     </div>
 
-    <div class="explanation-card card" id="explanationCard">
-        <div class="section-label">Spiegazione</div>
-        <div class="explanation-text" id="explanationText"></div>
-        <div class="tip-box">
-            <span>💡</span>
-            <span class="tip-text" id="tipText"></span>
-        </div>
+    <div id="expCard" class="glass">
+        <div class="slbl">Spiegazione</div>
+        <div class="etxt" id="etxt"></div>
+        <div class="tipbox"><span>💡</span><span class="tiptxt" id="ttxt"></span></div>
     </div>
 
-    <div class="variables-card card" id="variablesCard">
-        <div class="section-label">Variabili e parametri</div>
-        <div class="variables-grid cols-3" id="variablesGrid"></div>
-        <div class="sliders-section" id="slidersSection"></div>
+    <div id="varsCard" class="glass">
+        <div class="slbl">Parametri</div>
+        <div class="vgrid" id="vgrid"></div>
+        <div class="slidersWrap" id="slidersWrap"></div>
     </div>
 
-    <div class="bottom-cta" id="bottomCta">
-        <button class="cta-button" id="btnAnim" style="background:var(--color-parabola)">→ Anima la curva</button>
+    <div id="cta">
+        <button class="ctabtn" id="btnAnim">→ Anima la curva</button>
     </div>
 </div>
 
-<!-- ===== A-FRAME AR SCENE ===== -->
-<!--
-    ARCHITETTURA CORRETTA:
-    - Il marker contiene SOLO un <a-entity id="scene3d">
-    - Tutto il rendering 3D va dentro scene3d
-    - L'orientamento manuale viene gestito con un wrapper separato
-      che riceve rotation/scale dalle gesture SOLO nella fase explore
-    - La fase dettaglio usa Canvas 2D → nessun problema con AR.js
--->
+<!-- ===== A-FRAME SCENE ===== -->
 <a-scene
     embedded
-    arjs="sourceType: webcam; sourceWidth: 1280; sourceHeight: 960; debugUIEnabled: false; trackingMethod: best; maxDetectionRate: 60;"
-    renderer="antialias: true; alpha: true; logarithmicDepthBuffer: true;"
-    vr-mode-ui="enabled: false"
->
-    <a-marker
-        preset="hiro"
-        smooth="true"
-        smoothCount="15"
-        smoothTolerance="0.01"
-        smoothThreshold="5"
-        id="marker"
-    >
+    arjs="sourceType:webcam;sourceWidth:1280;sourceHeight:960;debugUIEnabled:false;trackingMethod:best;maxDetectionRate:60;"
+    renderer="antialias:true;alpha:true;logarithmicDepthBuffer:true;"
+    vr-mode-ui="enabled:false">
+    <a-marker preset="hiro" smooth="true" smoothCount="15" smoothTolerance="0.01" smoothThreshold="5" id="marker">
         <a-entity id="scene3d"></a-entity>
     </a-marker>
     <a-entity camera></a-entity>
 </a-scene>
 
 <script>
-(function() {
+(function(){
 'use strict';
 
-/* ============================================================
-   CONFIGURAZIONE CONICHE
-   Ogni conica definisce:
-   - angleRange: range di angolo α del piano rispetto all'asse (gradi)
-   - getPoints(p): restituisce array [{x,y}] della curva matematica
-   - getReaction(p): stringa per il badge
-   - getFormula(p): stringa formula LaTeX-like
-   ============================================================ */
+/* ================================================================
+   COSTANTI GEOMETRICHE DEL BICONO
+   
+   Semiangolo apicale phi = atan(R/H)
+   Con H=0.35, R=0.202: phi ≈ 30°
+   
+   Zone slider (0–90°):
+     [0–5]   → CERCHIO   (piano quasi perpendicolare all'asse)
+     [6–28]  → ELLISSE   (piano taglia solo una falda)
+     [29–31] → PARABOLA  (piano parallelo a una generatrice, alpha=phi)
+     [32–59] → ELLISSE   (piano obliquo, ancora una falda)
+     [60–90] → IPERBOLE  (piano taglia entrambe le falde, denom cambia segno)
+   ================================================================ */
+const CONE_H  = 0.35;
+const CONE_R  = 0.202;                             // R = H * tan(30°)
+const CONE_RH = CONE_R / CONE_H;                   // = tan(phi) ≈ 0.5774
+const CONE_PHI= Math.atan2(CONE_R, CONE_H);        // ≈ 30° in radianti
+// crossAngle: dove denom cambia segno → inizio iperbole
+const CONE_CROSS = Math.atan2(CONE_H, CONE_R);     // ≈ 60° in radianti
+
+/* ================================================================
+   DATI CONICHE (parametri fase dettaglio)
+   ================================================================ */
 const CONICS = {
     circle: {
-        name: 'Circonferenza', tag: 'CIRCONFERENZA',
-        category: 'Matematica • Geometria', icon: '⭕', color: '#3b82f6',
-        /* α = 0° → piano ⊥ all'asse: circonferenza */
-        angleRange: [0, 10],
-        equation: 'x² + y² = r²',
-        subtitle: 'Piano perpendicolare all\'asse del cono',
-        description: 'La circonferenza è il luogo dei punti equidistanti dal centro. Si ottiene tagliando il cono con un piano <strong>perpendicolare all\'asse</strong> (α = 0°).',
-        tip: 'Il rapporto tra la circonferenza e il diametro è sempre π ≈ 3.14159…',
-        reactionLabel: 'Raggio',
-        params: [
-            { id:'r', name:'Raggio', symbol:'r', desc:'Raggio', min:0.5, max:4, default:2, step:0.05, color:'#3b82f6' }
+        name:'Circonferenza', tag:'CIRCONFERENZA', cat:'Geometria • Luogo geometrico',
+        icon:'⭕', color:'#3b82f6',
+        eq:'x² + y² = r²', sub:'Piano perpendicolare all\'asse del cono (α = 0°)',
+        desc:'La <strong>circonferenza</strong> è il luogo dei punti equidistanti dal centro O. Si ottiene tagliando il bicono con un piano <strong>perpendicolare all\'asse</strong>.',
+        tip:'Il rapporto tra circonferenza e diametro è sempre π ≈ 3.14159…',
+        rxlbl:'Raggio',
+        params:[
+            {id:'r',sym:'r',desc:'Raggio',min:.4,max:4,def:2,step:.05,col:'#3b82f6'}
         ],
-        getFormula: (p) => `x² + y² = ${p.r.toFixed(2)}²`,
-        getFormulaDetail: () => `r = raggio della circonferenza`,
-        getReaction: (p) => `r = ${p.r.toFixed(3)}`,
-        getPoints: (p) => {
-            const pts = [];
-            for (let i = 0; i <= 360; i++) {
-                const t = (i / 360) * Math.PI * 2;
-                pts.push({ x: p.r * Math.cos(t), y: p.r * Math.sin(t) });
-            }
-            return [pts]; // array di sotto-curve
-        }
-    },
-    ellipse: {
-        name: 'Ellisse', tag: 'ELLISSE',
-        category: 'Matematica • Geometria', icon: '⬭', color: '#8b5cf6',
-        /* α tra 10° e 45° → ellisse */
-        angleRange: [11, 44],
-        equation: 'x²/a² + y²/b² = 1',
-        subtitle: 'Piano obliquo che taglia tutte le generatrici',
-        description: 'L\'ellisse è il luogo dei punti la cui <strong>somma delle distanze</strong> da due fuochi F₁, F₂ è costante (= 2a). Si ottiene con un piano obliquo che taglia tutte le generatrici di una sola falda.',
-        tip: 'Le orbite planetarie sono ellissi con il Sole in uno dei fuochi (Prima legge di Keplero).',
-        reactionLabel: 'Fuochi ±c',
-        params: [
-            { id:'a', name:'Semiasse a', symbol:'a', desc:'Semiasse maggiore', min:1, max:5, default:3, step:0.05, color:'#8b5cf6' },
-            { id:'b', name:'Semiasse b', symbol:'b', desc:'Semiasse minore',  min:0.3, max:4, default:2, step:0.05, color:'#a78bfa' }
-        ],
-        getFormula: (p) => `x²/${p.a.toFixed(2)}² + y²/${p.b.toFixed(2)}² = 1`,
-        getFormulaDetail: () => `a = semiasse maggiore   b = semiasse minore`,
-        getReaction: (p) => {
-            const c = Math.sqrt(Math.max(0, p.a*p.a - p.b*p.b));
-            return `c = ±${c.toFixed(3)}`;
-        },
-        getPoints: (p) => {
-            const pts = [];
-            for (let i = 0; i <= 360; i++) {
-                const t = (i / 360) * Math.PI * 2;
-                pts.push({ x: p.a * Math.cos(t), y: p.b * Math.sin(t) });
+        getFml:(p)=>`x² + y² = ${p.r.toFixed(2)}²`,
+        getFdet:()=>`r = raggio`,
+        getRx:(p)=>`r = ${p.r.toFixed(3)}`,
+        getPts:(p)=>{
+            const pts=[];
+            for(let i=0;i<=360;i++){
+                const t=(i/360)*Math.PI*2;
+                pts.push({x:p.r*Math.cos(t),y:p.r*Math.sin(t)});
             }
             return [pts];
         }
     },
-    parabola: {
-        name: 'Parabola', tag: 'PARABOLA',
-        category: 'Matematica • Funzioni', icon: '📐', color: '#06b6d4',
-        /* α ≈ metà angolo al vertice → parabola */
-        angleRange: [45, 55],
-        equation: 'y = ax² + bx + c',
-        subtitle: 'Piano parallelo a una generatrice del cono',
-        description: 'La parabola è il luogo dei punti <strong>equidistanti da un fuoco e dalla direttrice</strong>. Si ottiene con un piano parallelo a una generatrice (α = angolo semi-apicale del cono).',
-        tip: 'Il coefficiente <strong>a</strong> determina la larghezza: |a| grande → parabola stretta; |a| piccolo → parabola larga.',
-        reactionLabel: 'Vertice V',
-        params: [
-            { id:'a', name:'Apertura', symbol:'a', desc:'Apertura parabola', min:-2.5, max:2.5, default:1,   step:0.05, color:'#a855f7' },
-            { id:'b', name:'Traslaz.', symbol:'b', desc:'Coeff. lineare',    min:-4,   max:4,   default:0,   step:0.05, color:'#22c55e' },
-            { id:'c', name:'Intercetta', symbol:'c', desc:'Termine noto',   min:-3,   max:3,   default:0,   step:0.05, color:'#f59e0b' }
+    ellipse:{
+        name:'Ellisse', tag:'ELLISSE', cat:'Geometria • Luogo geometrico',
+        icon:'⬭', color:'#8b5cf6',
+        eq:'x²/a² + y²/b² = 1', sub:'Piano obliquo che taglia tutte le generatrici di una falda',
+        desc:'L\'<strong>ellisse</strong> è il luogo dei punti la cui <strong>somma delle distanze</strong> da due fuochi F₁ e F₂ è costante (= 2a).',
+        tip:'Le orbite planetarie sono ellissi. Il Sole occupa uno dei fuochi (1ª legge di Keplero).',
+        rxlbl:'Fuochi ±c',
+        params:[
+            {id:'a',sym:'a',desc:'Semiasse maggiore',min:1,max:5,def:3,step:.05,col:'#8b5cf6'},
+            {id:'b',sym:'b',desc:'Semiasse minore',  min:.3,max:4,def:2,step:.05,col:'#a78bfa'}
         ],
-        getFormula: (p) => {
-            const bStr = p.b >= 0 ? `+${p.b.toFixed(2)}` : p.b.toFixed(2);
-            const cStr = p.c >= 0 ? `+${p.c.toFixed(2)}` : p.c.toFixed(2);
-            return `y = ${p.a.toFixed(2)}x² ${bStr}x ${cStr}`;
-        },
-        getFormulaDetail: () => `a = apertura   b = traslazione   c = intercetta`,
-        getReaction: (p) => {
-            if (Math.abs(p.a) < 0.001) return 'V = indeterminato';
-            const vx = -p.b / (2 * p.a);
-            const vy = p.a*vx*vx + p.b*vx + p.c;
-            return `V = (${vx.toFixed(3)}, ${vy.toFixed(3)})`;
-        },
-        getPoints: (p) => {
-            const pts = [];
-            const steps = 400;
-            for (let i = 0; i <= steps; i++) {
-                const x = -7 + (14 * i / steps);
-                const y = p.a*x*x + p.b*x + p.c;
-                pts.push({ x, y });
-            }
+        getFml:(p)=>`x²/${p.a.toFixed(2)}² + y²/${p.b.toFixed(2)}² = 1`,
+        getFdet:()=>`a = semiasse maggiore   b = semiasse minore`,
+        getRx:(p)=>{const c=Math.sqrt(Math.max(0,p.a*p.a-p.b*p.b));return`c = ±${c.toFixed(3)}`},
+        getPts:(p)=>{
+            const pts=[];
+            for(let i=0;i<=360;i++){const t=(i/360)*Math.PI*2;pts.push({x:p.a*Math.cos(t),y:p.b*Math.sin(t)})}
             return [pts];
         }
     },
-    hyperbola: {
-        name: 'Iperbole', tag: 'IPERBOLE',
-        category: 'Matematica • Geometria', icon: '⥴', color: '#f59e0b',
-        /* α > angolo semi-apicale → iperbole (taglia entrambe le falde) */
-        angleRange: [56, 90],
-        equation: 'x²/a² − y²/b² = 1',
-        subtitle: 'Piano che taglia entrambe le falde del bicono',
-        description: 'L\'iperbole è il luogo dei punti la cui <strong>differenza delle distanze</strong> da due fuochi è costante (= 2a). Si ottiene con un piano che interseca entrambe le falde del bicono.',
-        tip: 'Le asintote y = ±(b/a)x sono le rette "limite" cui la curva si avvicina all\'infinito senza mai toccarle.',
-        reactionLabel: 'Asintoti',
-        params: [
-            { id:'a', name:'Semiasse a', symbol:'a', desc:'Semiasse reale',       min:0.4, max:4, default:2,   step:0.05, color:'#f59e0b' },
-            { id:'b', name:'Semiasse b', symbol:'b', desc:'Semiasse immaginario', min:0.4, max:4, default:1.5, step:0.05, color:'#fbbf24' }
+    parabola:{
+        name:'Parabola', tag:'PARABOLA', cat:'Analisi • Funzioni',
+        icon:'📐', color:'#06b6d4',
+        eq:'y = ax² + bx + c', sub:'Piano parallelo a una generatrice del cono (α = φ)',
+        desc:'La <strong>parabola</strong> è il luogo dei punti equidistanti da un fuoco F e dalla direttrice d. Si ottiene con un piano <strong>parallelo a una generatrice</strong>.',
+        tip:'Se a > 0 la parabola apre verso l\'alto; se a < 0 verso il basso.',
+        rxlbl:'Vertice V',
+        params:[
+            {id:'a',sym:'a',desc:'Apertura',    min:-2.5,max:2.5,def:1, step:.05,col:'#a855f7'},
+            {id:'b',sym:'b',desc:'Traslazione', min:-4,  max:4,  def:0, step:.05,col:'#22c55e'},
+            {id:'c',sym:'c',desc:'Intercetta',  min:-3,  max:3,  def:0, step:.05,col:'#f59e0b'}
         ],
-        getFormula: (p) => `x²/${p.a.toFixed(2)}² − y²/${p.b.toFixed(2)}² = 1`,
-        getFormulaDetail: () => `a = semiasse reale   b = semiasse immaginario`,
-        getReaction: (p) => `y = ±${(p.b/p.a).toFixed(3)}x`,
-        getPoints: (p) => {
-            /* Ramo destro */
-            const right = [];
-            const steps = 300;
-            for (let i = 0; i <= steps; i++) {
-                const t = -2.8 + (5.6 * i / steps);
-                right.push({ x:  p.a * Math.cosh(t), y: p.b * Math.sinh(t) });
-            }
-            /* Ramo sinistro */
-            const left = [];
-            for (let i = 0; i <= steps; i++) {
-                const t = -2.8 + (5.6 * i / steps);
-                left.push({ x: -p.a * Math.cosh(t), y: p.b * Math.sinh(t) });
-            }
-            return [right, left]; // due sotto-curve separate
+        getFml:(p)=>{
+            const bs=p.b>=0?`+${p.b.toFixed(2)}`:p.b.toFixed(2);
+            const cs=p.c>=0?`+${p.c.toFixed(2)}`:p.c.toFixed(2);
+            return `y = ${p.a.toFixed(2)}x² ${bs}x ${cs}`;
+        },
+        getFdet:()=>`a = apertura   b = traslazione   c = intercetta`,
+        getRx:(p)=>{
+            if(Math.abs(p.a)<.001)return'V = indeterminato';
+            const vx=-p.b/(2*p.a),vy=p.a*vx*vx+p.b*vx+p.c;
+            return`V = (${vx.toFixed(2)}, ${vy.toFixed(2)})`;
+        },
+        getPts:(p)=>{
+            const pts=[];
+            for(let i=0;i<=400;i++){const x=-7+(14*i/400);pts.push({x,y:p.a*x*x+p.b*x+p.c})}
+            return [pts];
+        }
+    },
+    hyperbola:{
+        name:'Iperbole', tag:'IPERBOLE', cat:'Geometria • Luogo geometrico',
+        icon:'⥴', color:'#f59e0b',
+        eq:'x²/a² − y²/b² = 1', sub:'Piano che taglia entrambe le falde del bicono',
+        desc:'L\'<strong>iperbole</strong> è il luogo dei punti la cui <strong>differenza delle distanze</strong> da due fuochi è costante (= 2a). Il piano taglia entrambe le falde.',
+        tip:'Le asintote y = ±(b/a)x sono le rette cui la curva si avvicina all\'infinito senza mai toccarle.',
+        rxlbl:'Asintoti',
+        params:[
+            {id:'a',sym:'a',desc:'Semiasse reale',       min:.4,max:4,def:2,  step:.05,col:'#f59e0b'},
+            {id:'b',sym:'b',desc:'Semiasse immaginario', min:.4,max:4,def:1.5,step:.05,col:'#fbbf24'}
+        ],
+        getFml:(p)=>`x²/${p.a.toFixed(2)}² − y²/${p.b.toFixed(2)}² = 1`,
+        getFdet:()=>`a = semiasse reale   b = semiasse immaginario`,
+        getRx:(p)=>`y = ±${(p.b/p.a).toFixed(3)}x`,
+        getPts:(p)=>{
+            const r=[],l=[];
+            for(let i=0;i<=300;i++){const t=-2.8+(5.6*i/300);r.push({x:p.a*Math.cosh(t),y:p.b*Math.sinh(t)})}
+            for(let i=0;i<=300;i++){const t=-2.8+(5.6*i/300);l.push({x:-p.a*Math.cosh(t),y:p.b*Math.sinh(t)})}
+            return [r,l];
         }
     }
 };
 
-/* ============================================================
-   STATO GLOBALE
-   ============================================================ */
+/* ================================================================
+   STATO
+   ================================================================ */
 let state = {
-    visible: false,
-    phase: 'explore',       // 'explore' | 'detail'
-    currentConic: 'parabola',
-    angle: 45,              // inclinazione piano α (gradi)
-    planePosY: 0.0,         // spostamento piano in Y (unità 3D, range ±0.25)
-    params: {},             // parametri per ogni conica
-    animating: false,
-    animTime: 0,
-    // Gesture touch (solo fase explore AR)
-    touch: { rotY: 0, scale: 1.0 }
+    visible:false, phase:'explore',
+    conic:'parabola',
+    alpha: CONE_PHI,          // angolo piano in radianti (default = parabola)
+    d: 0.08,                  // distanza piano dal vertice
+    params:{},
+    animating:false, animTime:0,
+    touch:{rotY:0, scale:1.0}
 };
 
-/* Persistenza: il modello rimane visibile per N frame dopo la perdita del marker */
-const PERSIST_FRAMES = 50;
-let markerLostFrames = 0;
-let markerFound = false;
+const PERSIST = 50;
+let lostFrames=0, markerFound=false;
+let scene3d=null;
+let frameCount=0;
 
-let scene3d = null;
-let animFrameId = null;
-let animFrameCount = 0;
-
-/* ============================================================
+/* ================================================================
    INIT
-   ============================================================ */
-function init() {
-    // Parametri default per ogni conica
-    Object.keys(CONICS).forEach(key => {
-        state.params[key] = {};
-        CONICS[key].params.forEach(p => { state.params[key][p.id] = p.default; });
+   ================================================================ */
+function init(){
+    Object.keys(CONICS).forEach(k=>{
+        state.params[k]={};
+        CONICS[k].params.forEach(p=>state.params[k][p.id]=p.def);
     });
-
-    const sceneEl = document.querySelector('a-scene');
-    sceneEl.hasLoaded ? setup() : sceneEl.addEventListener('loaded', setup);
+    const sc=document.querySelector('a-scene');
+    sc.hasLoaded?setup():sc.addEventListener('loaded',setup);
 }
 
-function setup() {
-    scene3d = document.getElementById('scene3d');
+function setup(){
+    scene3d=document.getElementById('scene3d');
 
-    document.getElementById('marker').addEventListener('markerFound', () => {
-        markerFound = true;
-        markerLostFrames = 0;
-        if (!state.visible) showTouchHint();
-        state.visible = true;
+    document.getElementById('marker').addEventListener('markerFound',()=>{
+        markerFound=true; lostFrames=0;
+        if(!state.visible) showHint();
+        state.visible=true;
         document.getElementById('statusOverlay').classList.add('hidden');
-        if (state.phase === 'explore') showExploreUI();
+        if(state.phase==='explore') showExploreUI();
         renderAR();
     });
-
-    document.getElementById('marker').addEventListener('markerLost', () => {
-        markerFound = false;
-        markerLostFrames = 0;
+    document.getElementById('marker').addEventListener('markerLost',()=>{
+        markerFound=false; lostFrames=0;
     });
 
-    setupExploreControls();
-    setupDetailControls();
-    setupTouchGestures();
-    updateExploreDisplay();
+    setupTouch();
+    setupExploreCtrl();
+    setupDetailCtrl();
+    syncExploreUI();
     renderAR();
-    animationLoop();
+    loop();
 }
 
-/* ============================================================
-   TOUCH HINT
-   ============================================================ */
-function showTouchHint() {
-    const h = document.getElementById('touchHint');
-    h.classList.add('visible');
-    setTimeout(() => h.classList.remove('visible'), 4000);
-}
+/* ================================================================
+   TOUCH GESTURES
+   ================================================================ */
+function setupTouch(){
+    let sx=0, lastPinch=null, lastTap=0;
+    const isUI=el=>el.closest('input,button,.glass,.hitem,#exploreBtn,.ctabtn')!==null;
 
-/* ============================================================
-   GESTURE TOUCH (solo per la scena AR 3D)
-   Drag orizzontale → rotY
-   Pinch → scala (0.4 – 2.5)
-   Doppio tap → reset
-   ============================================================ */
-function setupTouchGestures() {
-    let startX = 0;
-    let lastPinch = null;
-    let lastTap = 0;
-
-    function isUI(el) {
-        return el.closest('input,button,.card,.hint-item,.explore-btn,.cta-button') !== null;
-    }
-
-    document.addEventListener('touchstart', e => {
-        if (isUI(e.target)) return;
-        if (e.touches.length === 1) {
-            startX = e.touches[0].clientX;
-            const now = Date.now();
-            if (now - lastTap < 300) {
-                state.touch.rotY = 0;
-                state.touch.scale = 1.0;
-                renderAR();
-            }
-            lastTap = now;
-        } else if (e.touches.length === 2) {
-            const dx = e.touches[0].clientX - e.touches[1].clientX;
-            const dy = e.touches[0].clientY - e.touches[1].clientY;
-            lastPinch = Math.hypot(dx, dy);
+    document.addEventListener('touchstart',e=>{
+        if(isUI(e.target))return;
+        if(e.touches.length===1){
+            sx=e.touches[0].clientX;
+            const now=Date.now();
+            if(now-lastTap<300){state.touch.rotY=0;state.touch.scale=1;renderAR();}
+            lastTap=now;
+        } else if(e.touches.length===2){
+            const dx=e.touches[0].clientX-e.touches[1].clientX;
+            const dy=e.touches[0].clientY-e.touches[1].clientY;
+            lastPinch=Math.hypot(dx,dy);
         }
-    }, { passive: true });
+    },{passive:true});
 
-    document.addEventListener('touchmove', e => {
-        if (isUI(e.target)) return;
-        if (e.touches.length === 1) {
-            const dx = e.touches[0].clientX - startX;
-            state.touch.rotY += dx * 0.6;
-            startX = e.touches[0].clientX;
+    document.addEventListener('touchmove',e=>{
+        if(isUI(e.target))return;
+        if(e.touches.length===1){
+            const dx=e.touches[0].clientX-sx;
+            state.touch.rotY+=dx*0.6; sx=e.touches[0].clientX;
             renderAR();
-        } else if (e.touches.length === 2 && lastPinch !== null) {
-            const dx = e.touches[0].clientX - e.touches[1].clientX;
-            const dy = e.touches[0].clientY - e.touches[1].clientY;
-            const dist = Math.hypot(dx, dy);
-            const ratio = dist / lastPinch;
-            state.touch.scale = Math.max(0.4, Math.min(2.5, state.touch.scale * ratio));
-            lastPinch = dist;
-            renderAR();
+        } else if(e.touches.length===2&&lastPinch!==null){
+            const dx=e.touches[0].clientX-e.touches[1].clientX;
+            const dy=e.touches[0].clientY-e.touches[1].clientY;
+            const d=Math.hypot(dx,dy);
+            state.touch.scale=Math.max(.35,Math.min(2.8,state.touch.scale*d/lastPinch));
+            lastPinch=d; renderAR();
         }
-    }, { passive: true });
+    },{passive:true});
 
-    document.addEventListener('touchend', e => {
-        if (e.touches.length < 2) lastPinch = null;
-    }, { passive: true });
+    document.addEventListener('touchend',e=>{if(e.touches.length<2)lastPinch=null;},{passive:true});
 }
 
-/* ============================================================
+function showHint(){
+    const h=document.getElementById('touchHint');
+    h.classList.add('vis');
+    setTimeout(()=>h.classList.remove('vis'),4000);
+}
+
+/* ================================================================
+   DETERMINA CONICA dall'angolo alpha (MATEMATICAMENTE CORRETTA)
+   
+   Criteri:
+   - alpha ≈ 0 (< 3°)  → CERCHIO
+   - alpha < phi        → ELLISSE
+   - alpha ≈ phi (±1°)  → PARABOLA
+   - alpha > phi e denom non cambia segno → ELLISSE (transitorio)
+   - denom cambia segno (alpha > cross)   → IPERBOLE
+   
+   Dove: denom = cos(a) - RH*sin(theta)*sin(a)
+   Il denom cambia segno ↔ min(denom) = cos(a) - RH*sin(a) < 0
+   ↔ tan(a) > 1/RH = H/R ↔ a > cross = atan(H/R) ≈ 60°
+   ================================================================ */
+function detectConic(alphaRad){
+    if(alphaRad < 0.052) return 'circle';   // < 3°
+    const denomMin = Math.cos(alphaRad) - CONE_RH * Math.sin(alphaRad);
+    if(denomMin < -0.001) return 'hyperbola';
+    if(Math.abs(alphaRad - CONE_PHI) < 0.020) return 'parabola'; // ±1.1°
+    return 'ellipse';
+}
+
+/* ================================================================
    EXPLORE UI
-   ============================================================ */
-function showExploreUI() {
-    ['exploreDetection','planeControls','exploreBtn'].forEach(id => {
-        document.getElementById(id).classList.add('visible');
-    });
+   ================================================================ */
+function showExploreUI(){
+    ['detCard','controls','exploreBtn'].forEach(id=>document.getElementById(id).classList.add('vis'));
 }
-function hideExploreUI() {
-    ['exploreDetection','planeControls','exploreBtn'].forEach(id => {
-        document.getElementById(id).classList.remove('visible');
-    });
+function hideExploreUI(){
+    ['detCard','controls','exploreBtn'].forEach(id=>document.getElementById(id).classList.remove('vis'));
 }
 
-function detectConic(angle) {
-    for (const [key, c] of Object.entries(CONICS)) {
-        if (angle >= c.angleRange[0] && angle <= c.angleRange[1]) return key;
-    }
-    return 'parabola';
-}
+const CONIC_LABELS = {
+    circle:   {name:'Circonferenza', sub:'Piano perpendicolare all\'asse (α ≈ 0°)', eq:'x² + y² = r²'},
+    ellipse:  {name:'Ellisse',       sub:'Piano obliquo — taglia una sola falda',   eq:'x²/a² + y²/b² = 1'},
+    parabola: {name:'Parabola',      sub:'Piano parallelo a una generatrice (α = φ ≈ 30°)', eq:'y = ax² + bx + c'},
+    hyperbola:{name:'Iperbole',      sub:'Piano taglia entrambe le falde (α > 60°)', eq:'x²/a² − y²/b² = 1'}
+};
+const CONIC_COLORS = {circle:'#3b82f6',ellipse:'#8b5cf6',parabola:'#06b6d4',hyperbola:'#f59e0b'};
 
-function updateExploreDisplay() {
-    const key = state.currentConic;
-    const c = CONICS[key];
-    document.getElementById('expTag').textContent = c.tag;
-    document.getElementById('expTag').className = `detection-tag ${key}`;
-    document.getElementById('expTitle').textContent = c.name;
-    document.getElementById('expTitle').style.color = c.color;
-    const labels = {
-        circle:    'Piano perpendicolare all\'asse (α=0°)',
-        ellipse:   'Piano obliquo che taglia tutte le generatrici',
-        parabola:  'Piano parallelo a una generatrice',
-        hyperbola: 'Piano che taglia entrambe le falde'
-    };
-    document.getElementById('expSubtitle').textContent = labels[key];
-    document.getElementById('expFormula').textContent  = c.equation;
-    document.getElementById('exploreBtn').textContent  = `Esplora ${c.name} →`;
-    document.getElementById('exploreBtn').style.background = c.color;
-    document.querySelectorAll('.hint-item').forEach(item => {
-        item.classList.toggle('active', item.dataset.conic === key);
+function syncExploreUI(){
+    const key=state.conic;
+    const L=CONIC_LABELS[key], col=CONIC_COLORS[key];
+    document.getElementById('dtag').textContent=CONICS[key].tag;
+    document.getElementById('dtag').style.cssText=`background:${col}22;color:${col}`;
+    document.getElementById('dname').textContent=L.name;
+    document.getElementById('dname').style.color=col;
+    document.getElementById('dsub').textContent=L.sub;
+    document.getElementById('deq').textContent=L.eq;
+    document.getElementById('exploreBtn').textContent=`Esplora ${L.name} →`;
+    document.getElementById('exploreBtn').style.background=col;
+    document.querySelectorAll('.hitem').forEach(h=>{
+        h.classList.toggle('on',h.dataset.c===key);
     });
 }
 
-function setupExploreControls() {
-    document.getElementById('angleSlider').addEventListener('input', function() {
-        state.angle = parseInt(this.value);
-        document.getElementById('angleValue').textContent = state.angle + '°';
-        state.currentConic = detectConic(state.angle);
-        updateExploreDisplay();
+function setupExploreCtrl(){
+    const aSlider=document.getElementById('aSlider');
+    const dSlider=document.getElementById('dSlider');
+
+    aSlider.addEventListener('input',function(){
+        state.alpha=(parseInt(this.value)*Math.PI/180);
+        document.getElementById('aVal').textContent=parseInt(this.value)+'°';
+        state.conic=detectConic(state.alpha);
+        syncExploreUI();
         renderAR();
     });
 
-    document.getElementById('posSlider').addEventListener('input', function() {
-        /* Mappa ±80 → ±0.25 unità AR */
-        state.planePosY = parseInt(this.value) / 80 * 0.25;
-        document.getElementById('posValue').textContent = state.planePosY.toFixed(3);
-        state.currentConic = detectConic(state.angle);
-        updateExploreDisplay();
+    dSlider.addEventListener('input',function(){
+        /* Mappa [5,95] → [0.035, 0.28] con offset minimo garantito */
+        state.d = 0.035 + (parseInt(this.value)-5) / 90 * 0.245;
+        document.getElementById('dVal').textContent=state.d.toFixed(3);
         renderAR();
     });
 
-    document.getElementById('btnResetExplore').onclick = () => {
-        state.angle = 45; state.planePosY = 0;
-        state.touch.rotY = 0; state.touch.scale = 1.0;
-        document.getElementById('angleSlider').value = 45;
-        document.getElementById('posSlider').value   = 0;
-        document.getElementById('angleValue').textContent = '45°';
-        document.getElementById('posValue').textContent   = '0.000';
-        state.currentConic = 'parabola';
-        updateExploreDisplay();
-        renderAR();
+    document.getElementById('btnReset').onclick=()=>{
+        state.alpha=CONE_PHI; state.d=0.08;
+        state.touch.rotY=0; state.touch.scale=1;
+        aSlider.value=Math.round(CONE_PHI*180/Math.PI);
+        dSlider.value=40;
+        document.getElementById('aVal').textContent=Math.round(CONE_PHI*180/Math.PI)+'°';
+        document.getElementById('dVal').textContent='0.080';
+        state.conic='parabola';
+        syncExploreUI(); renderAR();
     };
 
-    document.querySelectorAll('.hint-item').forEach(item => {
-        item.onclick = () => {
-            const key = item.dataset.conic;
-            const mid = Math.round((CONICS[key].angleRange[0] + CONICS[key].angleRange[1]) / 2);
-            state.angle = mid;
-            document.getElementById('angleSlider').value = mid;
-            document.getElementById('angleValue').textContent = mid + '°';
-            state.currentConic = key;
-            updateExploreDisplay();
-            renderAR();
+    document.querySelectorAll('.hitem').forEach(h=>{
+        h.onclick=()=>{
+            const presets={
+                circle:   {a:1,  d:0.10},
+                ellipse:  {a:18, d:0.09},
+                parabola: {a:Math.round(CONE_PHI*180/Math.PI), d:0.08},
+                hyperbola:{a:70, d:0.07}
+            };
+            const pr=presets[h.dataset.c];
+            state.alpha=pr.a*Math.PI/180;
+            state.d=pr.d;
+            state.conic=h.dataset.c;
+            aSlider.value=pr.a;
+            // dSlider non aggiornato perché d è in unità diverse
+            document.getElementById('aVal').textContent=pr.a+'°';
+            document.getElementById('dVal').textContent=pr.d.toFixed(3);
+            syncExploreUI(); renderAR();
         };
     });
 
-    document.getElementById('exploreBtn').onclick = openDetailView;
+    document.getElementById('exploreBtn').onclick=openDetail;
 }
 
-/* ============================================================
+/* ================================================================
    DETAIL VIEW
-   ============================================================ */
-function openDetailView() {
-    state.phase = 'detail';
-    const key = state.currentConic;
-    const c   = CONICS[key];
-
+   ================================================================ */
+function openDetail(){
+    state.phase='detail';
     hideExploreUI();
-    document.getElementById('detailView').classList.add('visible');
+    document.getElementById('detailView').classList.add('vis');
 
-    /* Colori UI */
-    const col = c.color;
-    document.getElementById('reactionDot').style.cssText   = `background:${col}; box-shadow:0 0 10px ${col};`;
-    document.getElementById('reactionValue').style.color   = col;
-    document.getElementById('infoTitle').style.color       = col;
-    document.getElementById('infoTag').style.cssText       = `background:${col}22; color:${col};`;
-    document.getElementById('btnAnim').style.background    = col;
-    document.getElementById('infoTag').textContent         = c.category;
-    document.getElementById('infoIcon').textContent        = c.icon;
-    document.getElementById('infoTitle').textContent       = c.name;
-    document.getElementById('infoSubtitle').textContent    = c.subtitle;
-    document.getElementById('reactionLabel').textContent   = c.reactionLabel;
-    document.getElementById('explanationText').innerHTML   = c.description;
-    document.getElementById('tipText').innerHTML           = `<strong>Lo sapevi?</strong> ${c.tip}`;
+    const key=state.conic, c=CONICS[key], col=c.color;
+    const p=state.params[key];
 
-    /* Griglia variabili */
-    const grid = document.getElementById('variablesGrid');
-    grid.innerHTML = '';
-    grid.className = `variables-grid cols-${c.params.length > 2 ? 3 : 2}`;
-    c.params.forEach(pm => {
-        const d = document.createElement('div');
-        d.className = 'variable-item card-light';
-        d.innerHTML = `<div class="variable-symbol" style="color:${pm.color}">${pm.symbol}</div><div class="variable-desc">${pm.desc}</div>`;
-        grid.appendChild(d);
+    document.getElementById('rxdot').style.cssText=`background:${col};box-shadow:0 0 9px ${col}`;
+    document.getElementById('rxval').style.color=col;
+    document.getElementById('itag').style.cssText=`background:${col}22;color:${col}`;
+    document.getElementById('itag').textContent=c.cat;
+    document.getElementById('iico').textContent=c.icon;
+    document.getElementById('ititle').textContent=c.name;
+    document.getElementById('ititle').style.color=col;
+    document.getElementById('isub').textContent=c.sub;
+    document.getElementById('btnAnim').style.background=col;
+    document.getElementById('etxt').innerHTML=c.desc;
+    document.getElementById('ttxt').innerHTML=`<strong>Lo sapevi?</strong> ${c.tip}`;
+    document.getElementById('rxlbl').textContent=c.rxlbl;
+
+    // Griglia variabili
+    const vg=document.getElementById('vgrid');
+    vg.innerHTML='';
+    vg.className=`vgrid ${c.params.length>2?'c3':'c2'}`;
+    c.params.forEach(pm=>{
+        const d=document.createElement('div');
+        d.className='vitem glass-light';
+        d.innerHTML=`<div class="vsym" style="color:${pm.col}">${pm.sym}</div><div class="vdsc">${pm.desc}</div>`;
+        vg.appendChild(d);
     });
 
-    /* Slider parametri */
-    const sliders = document.getElementById('slidersSection');
-    sliders.innerHTML = '';
-    const p = state.params[key];
-    c.params.forEach(pm => {
-        const row = document.createElement('div');
-        row.className = 'slider-row';
-        row.innerHTML = `
-            <span class="slider-label" style="color:${pm.color}">${pm.symbol}</span>
-            <input type="range" class="slider-input" id="sl_${pm.id}"
-                   min="${pm.min}" max="${pm.max}" step="${pm.step}" value="${p[pm.id]}">
-            <span class="slider-value" id="sv_${pm.id}">${p[pm.id].toFixed(2)}</span>`;
-        sliders.appendChild(row);
-        row.querySelector(`#sl_${pm.id}`).addEventListener('input', function() {
-            p[pm.id] = parseFloat(this.value);
-            document.getElementById(`sv_${pm.id}`).textContent = p[pm.id].toFixed(2);
-            updateDetailUI();
-            drawConicCanvas();
+    // Slider
+    const sw=document.getElementById('slidersWrap');
+    sw.innerHTML='';
+    c.params.forEach(pm=>{
+        const row=document.createElement('div');
+        row.className='srow';
+        row.innerHTML=`<span class="slbl2" style="color:${pm.col}">${pm.sym}</span>
+            <input type="range" class="sinp" id="sl_${pm.id}" min="${pm.min}" max="${pm.max}" step="${pm.step}" value="${p[pm.id]}">
+            <span class="sval" id="sv_${pm.id}">${p[pm.id].toFixed(2)}</span>`;
+        sw.appendChild(row);
+        row.querySelector(`#sl_${pm.id}`).addEventListener('input',function(){
+            p[pm.id]=parseFloat(this.value);
+            document.getElementById(`sv_${pm.id}`).textContent=p[pm.id].toFixed(2);
+            syncDetailUI(); drawCanvas();
         });
     });
 
-    setTimeout(() => {
-        ['infoCard','canvasCard','explanationCard','variablesCard','bottomCta']
-            .forEach(id => document.getElementById(id).classList.add('visible'));
-    }, 40);
+    setTimeout(()=>{
+        ['infoCard','canvasCard','expCard','varsCard','cta'].forEach(id=>document.getElementById(id).classList.add('vis'));
+    },40);
 
-    updateDetailUI();
-    drawConicCanvas();
+    syncDetailUI(); drawCanvas();
 }
 
-function closeDetailView() {
-    state.phase = 'explore';
-    state.animating = false;
-    document.getElementById('btnAnim').textContent = '→ Anima la curva';
-    document.getElementById('btnAnim').classList.remove('is-stop');
-    ['infoCard','canvasCard','explanationCard','variablesCard','bottomCta']
-        .forEach(id => document.getElementById(id).classList.remove('visible'));
-    document.getElementById('detailView').classList.remove('visible');
-    if (state.visible) showExploreUI();
+function closeDetail(){
+    state.phase='explore'; state.animating=false;
+    document.getElementById('btnAnim').textContent='→ Anima la curva';
+    document.getElementById('btnAnim').classList.remove('stop');
+    ['infoCard','canvasCard','expCard','varsCard','cta'].forEach(id=>document.getElementById(id).classList.remove('vis'));
+    document.getElementById('detailView').classList.remove('vis');
+    if(state.visible) showExploreUI();
     renderAR();
 }
 
-function updateDetailUI() {
-    const key = state.currentConic;
-    const c   = CONICS[key];
-    const p   = state.params[key];
-    document.getElementById('formulaOverlay').textContent = c.getFormula(p);
-    document.getElementById('formulaDetail').textContent  = c.getFormulaDetail(p);
-    document.getElementById('reactionValue').textContent  = c.getReaction(p);
+function syncDetailUI(){
+    const key=state.conic, c=CONICS[key], p=state.params[key];
+    document.getElementById('fml').textContent=c.getFml(p);
+    document.getElementById('fdet').textContent=c.getFdet(p);
+    document.getElementById('rxval').textContent=c.getRx(p);
 }
 
-function setupDetailControls() {
-    document.getElementById('btnBack').onclick = closeDetailView;
-
-    document.getElementById('btnResetDetail').onclick = () => {
-        const c = CONICS[state.currentConic];
-        const p = state.params[state.currentConic];
-        c.params.forEach(pm => {
-            p[pm.id] = pm.default;
-            const sl = document.getElementById(`sl_${pm.id}`);
-            const sv = document.getElementById(`sv_${pm.id}`);
-            if (sl) sl.value = pm.default;
-            if (sv) sv.textContent = pm.default.toFixed(2);
+function setupDetailCtrl(){
+    document.getElementById('btnBack').onclick=closeDetail;
+    document.getElementById('btnResetD').onclick=()=>{
+        const c=CONICS[state.conic], p=state.params[state.conic];
+        c.params.forEach(pm=>{
+            p[pm.id]=pm.def;
+            const sl=document.getElementById(`sl_${pm.id}`);
+            const sv=document.getElementById(`sv_${pm.id}`);
+            if(sl)sl.value=pm.def;
+            if(sv)sv.textContent=pm.def.toFixed(2);
         });
-        updateDetailUI();
-        drawConicCanvas();
+        syncDetailUI(); drawCanvas();
     };
-
-    document.getElementById('btnAnim').onclick = function() {
-        state.animating = !state.animating;
-        this.textContent = state.animating ? '⏸ Ferma animazione' : '→ Anima la curva';
-        this.classList.toggle('is-stop', state.animating);
+    document.getElementById('btnAnim').onclick=function(){
+        state.animating=!state.animating;
+        this.textContent=state.animating?'⏸ Ferma':'→ Anima la curva';
+        this.classList.toggle('stop',state.animating);
     };
 }
 
-/* ============================================================
-   CANVAS 2D – DISEGNO CONICA (fase dettaglio)
-   Usa CanvasRenderingContext2D per linee continue pulite.
-   ============================================================ */
-function drawConicCanvas() {
-    const canvas = document.getElementById('conicCanvas');
-    if (!canvas) return;
-    const ctx    = canvas.getContext('2d');
-    const W = canvas.width, H = canvas.height;
-    const cx = W / 2, cy = H / 2;
+/* ================================================================
+   CANVAS 2D — DISEGNO CONICA CON LINEE CONTINUE
+   ================================================================ */
+function drawCanvas(){
+    const cv=document.getElementById('conicCanvas');
+    if(!cv)return;
+    const ctx=cv.getContext('2d');
+    const W=cv.width, H=cv.height, cx=W/2, cy=H/2;
+    const key=state.conic, c=CONICS[key], p=state.params[key], col=c.color;
 
-    /* Pulisci */
-    ctx.clearRect(0, 0, W, H);
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(6,8,20,.9)'; ctx.fillRect(0,0,W,H);
 
-    /* Sfondo */
-    ctx.fillStyle = 'rgba(8, 10, 22, 0.85)';
-    ctx.fillRect(0, 0, W, H);
+    // Griglia
+    ctx.strokeStyle='rgba(255,255,255,.05)'; ctx.lineWidth=1;
+    for(let x=cx%40;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+    for(let y=cy%40;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
 
-    const key   = state.currentConic;
-    const c     = CONICS[key];
-    const p     = state.params[key];
-    const color = c.color;
+    // Assi
+    ctx.strokeStyle='rgba(255,255,255,.15)'; ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
 
-    /* ---- GRIGLIA ---- */
-    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-    ctx.lineWidth   = 1;
-    const step = 40; // pixel tra linee griglia
-    for (let x = cx % step; x < W; x += step) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-    }
-    for (let y = cy % step; y < H; y += step) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    }
+    // Frecce assi
+    ctx.fillStyle='rgba(255,255,255,.15)';
+    arrow(ctx,cx,cy,W-8,cy); arrow(ctx,cx,cy,cx,8);
 
-    /* ---- ASSI ---- */
-    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-    ctx.lineWidth   = 1.5;
-    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+    // Etichette assi
+    ctx.fillStyle='rgba(200,210,255,.35)'; ctx.font='11px Space Mono,monospace';
+    ctx.fillText('x',W-18,cy-8); ctx.fillText('y',cx+7,16);
 
-    /* Frecce assi */
-    ctx.fillStyle = 'rgba(255,255,255,0.18)';
-    drawArrow(ctx, cx, cy, W - 8, cy);
-    drawArrow(ctx, cx, cy, cx, 8);
+    // Scala automatica
+    const allPts=c.getPts(p).flat().filter(pt=>isFinite(pt.x)&&isFinite(pt.y));
+    if(!allPts.length)return;
+    const xs=allPts.map(pt=>pt.x), ys=allPts.map(pt=>pt.y);
+    const x0=Math.min(...xs), x1=Math.max(...xs);
+    const y0=Math.min(...ys), y1=Math.max(...ys);
+    const spanX=Math.max(x1-x0,.01), spanY=Math.max(y1-y0,.01);
+    const scale=Math.min(W*.72/spanX, H*.72/spanY);
+    const mx=(x0+x1)/2, my=(y0+y1)/2;
+    const ts=(x,y)=>({sx:cx+(x-mx)*scale, sy:cy-(y-my)*scale});
 
-    /* Etichette assi */
-    ctx.fillStyle = 'rgba(200,210,255,0.4)';
-    ctx.font = '11px Space Mono, monospace';
-    ctx.fillText('x', W - 18, cy - 8);
-    ctx.fillText('y', cx + 8, 16);
-
-    /* ---- CALCOLO SCALA automatica ---- */
-    const allPtsFlat = c.getPoints(p).flat().filter(pt => isFinite(pt.x) && isFinite(pt.y));
-    if (allPtsFlat.length === 0) return;
-
-    const xVals = allPtsFlat.map(pt => pt.x);
-    const yVals = allPtsFlat.map(pt => pt.y);
-    const xMin = Math.min(...xVals), xMax = Math.max(...xVals);
-    const yMin = Math.min(...yVals), yMax = Math.max(...yVals);
-    const spanX = Math.max(xMax - xMin, 0.01);
-    const spanY = Math.max(yMax - yMin, 0.01);
-    /* Margine 20% per ogni lato */
-    const scaleX = (W * 0.75) / spanX;
-    const scaleY = (H * 0.75) / spanY;
-    const scale  = Math.min(scaleX, scaleY);
-
-    /* Offset per centrare il bounding box */
-    const midX = (xMin + xMax) / 2;
-    const midY = (yMin + yMax) / 2;
-
-    function toScreen(x, y) {
-        return {
-            sx: cx + (x - midX) * scale,
-            sy: cy - (y - midY) * scale
-        };
-    }
-
-    /* ---- GLOW (linea larga, bassa opacità) ---- */
-    ctx.save();
-    ctx.shadowColor = color;
-    ctx.shadowBlur  = 16;
-
-    c.getPoints(p).forEach(subcurve => {
-        ctx.beginPath();
-        ctx.strokeStyle = color + '55';
-        ctx.lineWidth   = 8;
-        ctx.lineJoin    = 'round';
-        ctx.lineCap     = 'round';
-        let started = false;
-        subcurve.forEach(pt => {
-            if (!isFinite(pt.x) || !isFinite(pt.y)) { started = false; return; }
-            const { sx, sy } = toScreen(pt.x, pt.y);
-            if (!started) { ctx.moveTo(sx, sy); started = true; }
-            else ctx.lineTo(sx, sy);
+    // GLOW
+    ctx.save(); ctx.shadowColor=col; ctx.shadowBlur=18;
+    c.getPts(p).forEach(sub=>{
+        ctx.beginPath(); ctx.strokeStyle=col+'44'; ctx.lineWidth=9; ctx.lineJoin='round'; ctx.lineCap='round';
+        let s=false;
+        sub.forEach(pt=>{
+            if(!isFinite(pt.x)||!isFinite(pt.y)){s=false;return}
+            const {sx,sy}=ts(pt.x,pt.y);
+            s?ctx.lineTo(sx,sy):(ctx.moveTo(sx,sy),s=true);
         });
         ctx.stroke();
     });
     ctx.restore();
 
-    /* ---- CURVA PRINCIPALE (linea continua netta) ---- */
-    ctx.save();
-    ctx.shadowColor = color;
-    ctx.shadowBlur  = 6;
-
-    c.getPoints(p).forEach(subcurve => {
-        ctx.beginPath();
-        ctx.strokeStyle = color;
-        ctx.lineWidth   = 2.8;
-        ctx.lineJoin    = 'round';
-        ctx.lineCap     = 'round';
-        let started = false;
-        subcurve.forEach(pt => {
-            if (!isFinite(pt.x) || !isFinite(pt.y)) { started = false; return; }
-            const { sx, sy } = toScreen(pt.x, pt.y);
-            if (!started) { ctx.moveTo(sx, sy); started = true; }
-            else ctx.lineTo(sx, sy);
+    // CURVA PRINCIPALE — linea continua
+    ctx.save(); ctx.shadowColor=col; ctx.shadowBlur=5;
+    c.getPts(p).forEach(sub=>{
+        ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.lineJoin='round'; ctx.lineCap='round';
+        let s=false;
+        sub.forEach(pt=>{
+            if(!isFinite(pt.x)||!isFinite(pt.y)){s=false;return}
+            const {sx,sy}=ts(pt.x,pt.y);
+            s?ctx.lineTo(sx,sy):(ctx.moveTo(sx,sy),s=true);
         });
         ctx.stroke();
     });
     ctx.restore();
 
-    /* ---- PUNTI SPECIALI ---- */
-    if (key === 'parabola' && Math.abs(p.a) > 0.001) {
-        /* Vertice */
-        const vx = -p.b / (2 * p.a);
-        const vy = p.a*vx*vx + p.b*vx + p.c;
-        const { sx, sy } = toScreen(vx, vy);
-        drawPoint(ctx, sx, sy, '#fbbf24', '#fcd34d', 5);
-        ctx.fillStyle = 'rgba(251,191,36,0.7)';
-        ctx.font = '11px Space Mono, monospace';
-        ctx.fillText(`V(${vx.toFixed(2)}, ${vy.toFixed(2)})`, sx + 8, sy - 7);
-        /* Asse di simmetria */
-        const { sy: syTop } = toScreen(vx, midY + spanY * 0.6);
-        const { sy: syBot } = toScreen(vx, midY - spanY * 0.6);
-        ctx.setLineDash([4, 6]);
-        ctx.strokeStyle = 'rgba(251,191,36,0.3)';
-        ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(sx, syTop); ctx.lineTo(sx, syBot); ctx.stroke();
+    // PUNTI SPECIALI
+    if(key==='parabola'&&Math.abs(p.a)>.001){
+        const vx=-p.b/(2*p.a), vy=p.a*vx*vx+p.b*vx+p.c;
+        const {sx,sy}=ts(vx,vy);
+        dot(ctx,sx,sy,'#fbbf24','#fcd34d',5);
+        ctx.fillStyle='rgba(251,191,36,.7)'; ctx.font='11px Space Mono,monospace';
+        ctx.fillText(`V(${vx.toFixed(1)},${vy.toFixed(1)})`,sx+8,sy-7);
+        // asse di simmetria
+        ctx.setLineDash([4,6]); ctx.strokeStyle='rgba(251,191,36,.25)'; ctx.lineWidth=1;
+        const {sy:st}=ts(vx,my+spanY*.6), {sy:sb}=ts(vx,my-spanY*.6);
+        ctx.beginPath();ctx.moveTo(sx,st);ctx.lineTo(sx,sb);ctx.stroke();
         ctx.setLineDash([]);
     }
-    if (key === 'ellipse') {
-        /* Fuochi */
-        const fc = Math.sqrt(Math.max(0, p.a*p.a - p.b*p.b));
-        [ fc, -fc ].forEach(fx => {
-            const { sx, sy } = toScreen(fx, 0);
-            drawPoint(ctx, sx, sy, '#f59e0b', '#fcd34d', 4);
-        });
+    if(key==='ellipse'){
+        const fc=Math.sqrt(Math.max(0,p.a*p.a-p.b*p.b));
+        [fc,-fc].forEach(fx=>{const {sx,sy}=ts(fx,0);dot(ctx,sx,sy,'#f59e0b','#fcd34d',4)});
     }
-    if (key === 'hyperbola') {
-        /* Asintoti */
-        const sl = p.b / p.a;
-        ctx.setLineDash([5, 7]);
-        ctx.strokeStyle = 'rgba(251,191,36,0.35)';
-        ctx.lineWidth = 1.2;
-        const halfSpan = Math.max(spanX, spanY) * 0.8;
-        [sl, -sl].forEach(s => {
-            const p1 = toScreen(-halfSpan, -halfSpan * s);
-            const p2 = toScreen( halfSpan,  halfSpan * s);
-            ctx.beginPath(); ctx.moveTo(p1.sx, p1.sy); ctx.lineTo(p2.sx, p2.sy); ctx.stroke();
+    if(key==='hyperbola'){
+        const sl=p.b/p.a;
+        ctx.setLineDash([5,7]); ctx.strokeStyle='rgba(251,191,36,.3)'; ctx.lineWidth=1.2;
+        const hp=Math.max(spanX,spanY)*.85;
+        [-sl,sl].forEach(s=>{
+            const p1=ts(-hp,-hp*s), p2=ts(hp,hp*s);
+            ctx.beginPath();ctx.moveTo(p1.sx,p1.sy);ctx.lineTo(p2.sx,p2.sy);ctx.stroke();
         });
         ctx.setLineDash([]);
     }
-    if (key === 'circle') {
-        /* Centro */
-        const { sx, sy } = toScreen(0, 0);
-        drawPoint(ctx, sx, sy, '#3b82f6', '#93c5fd', 4);
-        /* Raggio */
-        const { sx: rsx } = toScreen(p.r, 0);
-        ctx.strokeStyle = 'rgba(59,130,246,0.4)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 6]);
-        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(rsx, sy); ctx.stroke();
+    if(key==='circle'){
+        const {sx,sy}=ts(0,0);
+        dot(ctx,sx,sy,'#3b82f6','#93c5fd',4);
+        const {sx:rx}=ts(p.r,0);
+        ctx.setLineDash([4,6]); ctx.strokeStyle='rgba(59,130,246,.3)'; ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(rx,sy);ctx.stroke();
         ctx.setLineDash([]);
-        ctx.fillStyle = 'rgba(147,197,253,0.6)';
-        ctx.font = '11px Space Mono, monospace';
-        ctx.fillText(`r=${p.r.toFixed(2)}`, (sx + rsx) / 2 - 12, sy - 8);
+        ctx.fillStyle='rgba(147,197,253,.6)'; ctx.font='11px Space Mono,monospace';
+        ctx.fillText(`r=${p.r.toFixed(2)}`,(sx+rx)/2-14,sy-8);
     }
 }
 
-function drawArrow(ctx, fromX, fromY, toX, toY) {
-    const angle = Math.atan2(toY - fromY, toX - fromX);
-    const size = 7;
-    ctx.beginPath();
-    ctx.moveTo(toX, toY);
-    ctx.lineTo(toX - size * Math.cos(angle - 0.4), toY - size * Math.sin(angle - 0.4));
-    ctx.lineTo(toX - size * Math.cos(angle + 0.4), toY - size * Math.sin(angle + 0.4));
-    ctx.closePath();
-    ctx.fill();
+function arrow(ctx,fx,fy,tx,ty){
+    const a=Math.atan2(ty-fy,tx-fx),s=7;
+    ctx.beginPath();ctx.moveTo(tx,ty);
+    ctx.lineTo(tx-s*Math.cos(a-.4),ty-s*Math.sin(a-.4));
+    ctx.lineTo(tx-s*Math.cos(a+.4),ty-s*Math.sin(a+.4));
+    ctx.closePath();ctx.fill();
+}
+function dot(ctx,sx,sy,c1,c2,r){
+    ctx.beginPath();ctx.arc(sx,sy,r*2.4,0,Math.PI*2);ctx.fillStyle=c1+'33';ctx.fill();
+    ctx.beginPath();ctx.arc(sx,sy,r,0,Math.PI*2);ctx.fillStyle=c2;ctx.fill();
 }
 
-function drawPoint(ctx, sx, sy, colorOuter, colorInner, r) {
-    /* Alone */
-    ctx.beginPath();
-    ctx.arc(sx, sy, r * 2.5, 0, Math.PI * 2);
-    ctx.fillStyle = colorOuter + '33';
-    ctx.fill();
-    /* Punto */
-    ctx.beginPath();
-    ctx.arc(sx, sy, r, 0, Math.PI * 2);
-    ctx.fillStyle = colorInner;
-    ctx.fill();
-}
-
-/* ============================================================
-   RENDER AR 3D (fase esplorazione)
+/* ================================================================
+   RENDER AR 3D
+   
    ARCHITETTURA MATEMATICAMENTE CORRETTA:
+   =========================================
+   Fase explore mostra ESATTAMENTE 3 elementi:
    
-   Bicono = doppio cono (apice condiviso, asse Y verticale)
-     - Semiangolo apicale φ (costante = 35°)
-     - Parametrizzato come: x = t·tan(φ)·cos(θ), y = t, z = t·tan(φ)·sin(θ)
-       con t ∈ [-H, H], θ ∈ [0, 2π]
+   1. BICONO WIREFRAME
+      - Doppio cono con apice condiviso, asse Y
+      - Generatrici e anelli
    
-   Piano di taglio = piano inclinato di angolo α rispetto al piano XZ
-     - Normale: n = (0, cos(α°), -sin(α°))  → rotazione attorno all'asse X
-     - Equazione: y·cos(α) - z·sin(α) = d   dove d = planePosY
+   2. PIANO SECANTE (semitrasparente)
+      - Piano inclinato di alpha attorno all'asse X
+      - Equazione: y*cos(a) - z*sin(a) = d
+      - Posizionato alla distanza d dal vertice lungo la normale
    
-   Curva di intersezione = calcolata campionando θ ∈ [0, 2π]:
-     Per ogni θ trovo t tale che il punto del cono stia sul piano.
-     Punto cono: P(t,θ) = (t·R/H·cos(θ), t, t·R/H·sin(θ))
-     Condizione piano: t·cos(α) - t·R/H·sin(θ)·sin(α) = d
-     → t(θ) = d / (cos(α) - (R/H)·sin(θ)·sin(α))
-   Questo è valido SOLO quando il denominatore ≠ 0.
-   Per l'iperbole (piano che taglia entrambe le falde) campiono
-   entrambi i segni di t.
-   ============================================================ */
+   3. CURVA DI INTERSEZIONE (sulla superficie del piano)
+      - Calcolata come vera intersezione piano ∩ bicono
+      - Formula: t(θ) = d / (cos(a) - RH*sin(θ)*sin(a))
+      - Punto 3D: P = (t*RH*cos(θ), t, t*RH*sin(θ))
+      - Il punto P appartiene PER COSTRUZIONE sia al piano che al cono
+      - Nessun offset aggiunto: la curva GIACE SUL PIANO
+   ================================================================ */
+function renderAR(){
+    if(!scene3d)return;
+    scene3d.innerHTML='';
 
-const CONE_H    = 0.38;    // altezza semi-cono
-const CONE_R    = 0.26;    // raggio base (determina semiangolo)
-const HALF_ANGLE_RAD = Math.atan2(CONE_R, CONE_H); // semiangolo apicale (φ)
+    const sc=state.touch.scale;
+    const wrap=document.createElement('a-entity');
+    wrap.setAttribute('rotation',`0 ${state.touch.rotY} 0`);
+    wrap.setAttribute('scale',`${sc} ${sc} ${sc}`);
+    scene3d.appendChild(wrap);
 
-function renderAR() {
-    if (!scene3d) return;
-    scene3d.innerHTML = '';
-
-    /* Wrapper touch (rotazione + scala dall'utente) */
-    const s = state.touch.scale;
-    const wrapper = document.createElement('a-entity');
-    wrapper.setAttribute('rotation', `0 ${state.touch.rotY} 0`);
-    wrapper.setAttribute('scale', `${s} ${s} ${s}`);
-    scene3d.appendChild(wrapper);
-
-    buildBicone(wrapper);
-    buildCuttingPlane(wrapper);
-    buildIntersectionCurve(wrapper);
+    buildBicone(wrap);
+    buildPlane(wrap);
+    buildIntersection(wrap);
 }
 
-/* --- BICONO WIREFRAME --- */
-function buildBicone(parent) {
-    const H = CONE_H, R = CONE_R;
-    const numGen = 20;     // generatrici
-    const numRing = 5;     // anelli orizzontali per falda
+/* ---- 1. BICONO ---- */
+function buildBicone(parent){
+    const H=CONE_H, R=CONE_R;
 
-    /* === SUPERFICI CONICHE (semitrasparenti) === */
-    ['up','down'].forEach(dir => {
-        const cone = document.createElement('a-cone');
-        const sign = dir === 'up' ? 1 : -1;
-        cone.setAttribute('position', `0 ${sign * H / 2} 0`);
-        cone.setAttribute('radius-bottom', dir === 'up' ? '0'          : R.toString());
-        cone.setAttribute('radius-top',    dir === 'up' ? R.toString() : '0');
-        cone.setAttribute('height', H.toString());
-        cone.setAttribute('color', '#102040');
-        cone.setAttribute('opacity', '0.55');
-        cone.setAttribute('shader', 'flat');
-        cone.setAttribute('open-ended', 'true');
-        cone.setAttribute('side', 'double');
-        cone.setAttribute('segments-radial', '64');
+    // Superfici coniche (semitrasparenti)
+    [{pos:`0 ${H/2} 0`,  rb:'0',          rt:R+''},
+     {pos:`0 ${-H/2} 0`, rb:R+'',         rt:'0'}
+    ].forEach(({pos,rb,rt})=>{
+        const cone=document.createElement('a-cone');
+        cone.setAttribute('position',pos);
+        cone.setAttribute('radius-bottom',rb); cone.setAttribute('radius-top',rt);
+        cone.setAttribute('height',''+H);
+        cone.setAttribute('color','#0a1f44'); cone.setAttribute('opacity','0.5');
+        cone.setAttribute('shader','flat'); cone.setAttribute('open-ended','true');
+        cone.setAttribute('side','double'); cone.setAttribute('segments-radial','64');
         parent.appendChild(cone);
     });
 
-    /* === GENERATRICI (raggi dal vertice alle basi) === */
-    for (let i = 0; i < numGen; i++) {
-        const θ = (i / numGen) * Math.PI * 2;
-        const x = Math.cos(θ) * R;
-        const z = Math.sin(θ) * R;
-        addLine(parent, 0, 0, 0, x,  H, z, '#60a5fa', 0.7);
-        addLine(parent, 0, 0, 0, x, -H, z, '#60a5fa', 0.7);
+    // Generatrici (raggi dal vertice alle basi)
+    const NG=18;
+    for(let i=0;i<NG;i++){
+        const th=(i/NG)*Math.PI*2;
+        const x=Math.cos(th)*R, z=Math.sin(th)*R;
+        line(parent, 0,0,0, x,H,z,  '#4a9eff',0.65);
+        line(parent, 0,0,0, x,-H,z, '#4a9eff',0.65);
     }
 
-    /* === ANELLI ORIZZONTALI === */
-    const ringSegs = 60;
-    for (let ri = 1; ri <= numRing; ri++) {
-        const frac = ri / numRing;
-        [-1, 1].forEach(sign => {
-            const h = sign * H * frac;
-            const r = Math.abs(h) * (R / H);
-            for (let i = 0; i < ringSegs; i++) {
-                const a1 = (i / ringSegs) * Math.PI * 2;
-                const a2 = ((i+1) / ringSegs) * Math.PI * 2;
-                addLine(parent,
-                    Math.cos(a1)*r, h, Math.sin(a1)*r,
-                    Math.cos(a2)*r, h, Math.sin(a2)*r,
-                    ri === numRing ? '#bfdbfe' : '#4b72b8',
-                    ri === numRing ? 0.65 : 0.35
-                );
+    // Anelli orizzontali (5 per falda)
+    const NR=5, NS=60;
+    for(let ri=1;ri<=NR;ri++){
+        const frac=ri/NR;
+        [-1,1].forEach(sign=>{
+            const hy=sign*H*frac;
+            const r=Math.abs(hy)*(R/H);
+            const bright= ri===NR ? '#90c4ff' : '#3a6ab8';
+            const op    = ri===NR ? 0.65      : 0.3;
+            for(let i=0;i<NS;i++){
+                const a1=(i/NS)*Math.PI*2, a2=((i+1)/NS)*Math.PI*2;
+                line(parent,
+                    Math.cos(a1)*r,hy,Math.sin(a1)*r,
+                    Math.cos(a2)*r,hy,Math.sin(a2)*r,
+                    bright,op);
             }
         });
     }
 
-    /* === VERTICE === */
-    const glow = document.createElement('a-sphere');
-    glow.setAttribute('position','0 0 0');
-    glow.setAttribute('radius','0.035');
-    glow.setAttribute('color','#ffffff');
-    glow.setAttribute('opacity','0.15');
-    glow.setAttribute('shader','flat');
-    parent.appendChild(glow);
-    const vtx = document.createElement('a-sphere');
-    vtx.setAttribute('position','0 0 0');
-    vtx.setAttribute('radius','0.016');
-    vtx.setAttribute('color','#ffffff');
-    vtx.setAttribute('shader','flat');
-    parent.appendChild(vtx);
+    // Asse del cono (sottile)
+    line(parent, 0,-H*1.12,0, 0,H*1.12,0, '#ffffff',0.10);
 
-    /* === ASSE DEL CONO === */
-    addLine(parent, 0, -H*1.1, 0, 0, H*1.1, 0, '#ffffff', 0.12);
+    // Vertice
+    const glow=document.createElement('a-sphere');
+    glow.setAttribute('position','0 0 0'); glow.setAttribute('radius','0.032');
+    glow.setAttribute('color','#ffffff'); glow.setAttribute('opacity','0.14');
+    glow.setAttribute('shader','flat'); parent.appendChild(glow);
+    const vtx=document.createElement('a-sphere');
+    vtx.setAttribute('position','0 0 0'); vtx.setAttribute('radius','0.014');
+    vtx.setAttribute('color','#ffffff'); vtx.setAttribute('shader','flat');
+    parent.appendChild(vtx);
 }
 
-/* --- PIANO DI TAGLIO --- */
-function buildCuttingPlane(parent) {
-    const color = CONICS[state.currentConic].color;
-    const αRad  = (state.angle * Math.PI) / 180;
-    const D_MIN = 0.05;
-    const d = Math.abs(state.planePosY) < D_MIN
-        ? (state.planePosY >= 0 ? D_MIN : -D_MIN)
-        : state.planePosY;
+/* ---- 2. PIANO SECANTE ----
+   
+   Piano: y*cos(a) - z*sin(a) = d
+   Normale: n = (0, cos(a), -sin(a))
+   
+   Vettori sul piano:
+     u = (1, 0, 0)              [asse X, sempre nel piano]
+     v = (0, sin(a), cos(a))    [perpendicolare a n nel piano YZ]
+   
+   Centro del piano (punto sul piano più vicino all'origine):
+     C = d * n = (0, d*cos(a), -d*sin(a))
+   
+   Il piano è un rettangolo di lato PLANE_SIZE centrato in C,
+   orientato con u e v.
+*/
+function buildPlane(parent){
+    const a=state.alpha, d=state.d;
+    const cosA=Math.cos(a), sinA=Math.sin(a);
+    const col=CONIC_COLORS[state.conic];
 
-    /* A-Frame usa rotazione X per inclinare il piano (che giace su XZ per default) */
-    /* rotation.x = -(90 - α) per avere il piano inclinato di α rispetto all'orizzontale */
-    const rotXdeg = -(90 - state.angle);
+    // Centro del piano
+    const Cy= d*cosA;
+    const Cz=-d*sinA;
 
-    const planeSize = 0.6;
-
-    /* Piano semitrasparente */
-    const plane = document.createElement('a-plane');
-    plane.setAttribute('position', `0 ${d} 0`);
-    plane.setAttribute('rotation', `${rotXdeg} 0 0`);
-    plane.setAttribute('width',  planeSize.toString());
-    plane.setAttribute('height', planeSize.toString());
-    plane.setAttribute('color',  '#b8d0ff');
-    plane.setAttribute('opacity','0.22');
+    /* A-Frame: a-plane di default giace sul piano XY (normale +Z).
+       Per ottenere normale n=(0,cos(a),-sin(a)):
+       - La normale target ruota di 'a' gradi attorno all'asse X dal +Y
+       - rotation.x = -(90 - a_deg) = a_deg - 90  [A-Frame ruota il piano, non la normale]
+       - Poi sposto il piano in posizione C */
+    const aDeg = a * 180 / Math.PI;
+    const plane=document.createElement('a-plane');
+    plane.setAttribute('position', `0 ${Cy} ${Cz}`);
+    plane.setAttribute('rotation', `${aDeg-90} 0 0`);
+    plane.setAttribute('width',  '0.55');
+    plane.setAttribute('height', '0.55');
+    plane.setAttribute('color',  '#c0d8ff');
+    plane.setAttribute('opacity','0.18');
     plane.setAttribute('shader', 'flat');
     plane.setAttribute('side',   'double');
     parent.appendChild(plane);
 
-    /* Bordo del piano colorato */
-    const segs = 48;
-    const half = planeSize / 2;
-    const corners = [
-        [-half, -half], [ half, -half],
-        [ half,  half], [-half,  half]
-    ];
-    /* Trasformiamo i corners del piano locale in world-space (rotazione attorno a X) */
-    const cosA = Math.cos(αRad), sinA = Math.sin(αRad);
-    const worldCorners = corners.map(([lx, ly]) => ({
-        wx: lx,
-        wy: d + ly * sinA,
-        wz: ly * cosA        // nota: A-Frame piano è su XY, ruotato → Z = localY * cos
+    /* Bordo del piano: i 4 angoli del rettangolo nel sistema di riferimento locale
+       poi trasformati in world-space.
+       Locale: centro C, assi u=(1,0,0), v=(0,sinA,cosA), half=0.275
+       Angoli: C ± 0.275*u ± 0.275*v */
+    const H2=0.275;
+    const corners=[
+        {lu:-H2,lv:-H2},{lu:H2,lv:-H2},{lu:H2,lv:H2},{lu:-H2,lv:H2}
+    ].map(({lu,lv})=>({
+        x: lu,
+        y: Cy  + lv*sinA,
+        z: Cz  + lv*cosA
     }));
-    /* Disegno i 4 lati */
-    for (let i = 0; i < 4; i++) {
-        const a = worldCorners[i], b = worldCorners[(i+1)%4];
-        addLine(parent, a.wx, a.wy, a.wz, b.wx, b.wy, b.wz, color, 0.9);
+
+    // Bordo colorato (4 lati)
+    for(let i=0;i<4;i++){
+        const A2=corners[i], B=corners[(i+1)%4];
+        line(parent, A2.x,A2.y,A2.z, B.x,B.y,B.z, col, 0.95);
     }
 
-    /* Normale al piano (indicatore direzionale) */
-    const nLen = 0.12;
-    /* Normale della forma (0, cos(α), -sin(α)) normalizzata */
-    addLine(parent,
-        0, d, 0,
-        0, d + nLen * cosA, -nLen * sinA,
-        '#ffffff', 0.5
-    );
-    const nTip = document.createElement('a-sphere');
-    nTip.setAttribute('position', `0 ${d + nLen * cosA} ${-nLen * sinA}`);
-    nTip.setAttribute('radius','0.012');
-    nTip.setAttribute('color','#ffffff');
-    nTip.setAttribute('shader','flat');
-    parent.appendChild(nTip);
+    /* Indicatore della normale (vettore perpendicolare al piano) */
+    const nLen=0.10;
+    line(parent, 0,Cy,Cz, 0, Cy+nLen*cosA, Cz-nLen*sinA, '#ffffff', 0.4);
+    const sp=document.createElement('a-sphere');
+    sp.setAttribute('position',`0 ${Cy+nLen*cosA} ${Cz-nLen*sinA}`);
+    sp.setAttribute('radius','0.010'); sp.setAttribute('color','#ffffff');
+    sp.setAttribute('shader','flat'); parent.appendChild(sp);
 }
 
-/* --- CURVA DI INTERSEZIONE (matematicamente corretta) --- */
-/*
-  Strategia:
-  Il bicono ha equazione: x² + z² = (y/H*R)²  →  x²+z² = (R/H)²·y²
-  Il piano ha equazione:  y·cos(α) - z·sin(α) = d
-  
-  Parametrizziamo il cono con (θ, t):
-    x = t·(R/H)·cos(θ)
-    y = t
-    z = t·(R/H)·sin(θ)
-  
-  Sostituiamo nel piano:
-    t·cos(α) - t·(R/H)·sin(θ)·sin(α) = d
-    t · [cos(α) - (R/H)·sin(θ)·sin(α)] = d
-    t(θ) = d / [cos(α) - (R/H)·sin(θ)·sin(α)]
-  
-  Il punto 3D corrispondente:
-    x = t·(R/H)·cos(θ)
-    y = t
-    z = t·(R/H)·sin(θ)
-  
-  Questo produce la sezione conica REALE.
-  
-  Casi:
-  - Se il denominatore cambia segno: la curva ha un "salto" → iperbole (due rami)
-  - Se il denominatore è sempre ≠ 0 e t rimane in [-H,H]: ellisse/cerchio/parabola
+/* ---- 3. CURVA DI INTERSEZIONE ----
+   
+   FORMULA ESATTA (dimostrata nei test):
+   
+   Cono parametrizzato per (θ, t):
+     P(θ,t) = ( t*RH*cos(θ),  t,  t*RH*sin(θ) )
+   
+   Intersezione col piano y*cos(a)-z*sin(a)=d:
+     t*cos(a) - t*RH*sin(θ)*sin(a) = d
+     t(θ) = d / ( cos(a) - RH*sin(θ)*sin(a) )
+   
+   Il punto risultante P(θ) = ( t*RH*cos(θ), t, t*RH*sin(θ) ) sta
+   ESATTAMENTE sia sul cono che sul piano → errore numerico ~10^-17.
+   
+   GESTIONE DISCONTINUITÀ:
+   - Se |denom| < EPS: punto singolare (asintotico) → gap nella curva
+   - Se |t| > H*1.02: il punto cade fuori dal bicono → gap
+   - Segmenti con distanza 3D > JUMP_THRESH: salto dell'iperbole → gap
 */
-function buildIntersectionCurve(parent) {
-    const H   = CONE_H, R = CONE_R;
-    const RH  = R / H;
-    const αRad = (state.angle * Math.PI) / 180;
-    const cosA = Math.cos(αRad), sinA = Math.sin(αRad);
-    /*
-     * Offset minimo: quando d=0 il piano passa per il vertice e la
-     * "conica" degenera in un punto. Usiamo un offset di default
-     * (D_MIN) così la curva è sempre visibile. L'utente può poi
-     * spostare lo slider sopra o sotto questo valore.
-     */
-    const D_MIN = 0.05;
-    const d = Math.abs(state.planePosY) < D_MIN
-        ? (state.planePosY >= 0 ? D_MIN : -D_MIN)
-        : state.planePosY;
-    const color = CONICS[state.currentConic].color;
+function buildIntersection(parent){
+    const a=state.alpha, d=state.d;
+    const cosA=Math.cos(a), sinA=Math.sin(a);
+    const RH=CONE_RH, H=CONE_H;
+    const col=CONIC_COLORS[state.conic];
+    const EPS=1e-5, STEPS=720, JUMP=0.20;
 
-    const steps = 360;
-    const pts3d = []; // array di {x,y,z} o null (gap)
-
-    for (let i = 0; i <= steps; i++) {
-        const θ = (i / steps) * Math.PI * 2;
-        const denom = cosA - RH * Math.sin(θ) * sinA;
-
-        if (Math.abs(denom) < 1e-6) {
-            pts3d.push(null); // asintoto / singolarità
-            continue;
-        }
-
-        const t = d / denom;
-
-        /* Filtra punti fuori dal bicono */
-        if (Math.abs(t) > H * 1.05) {
-            pts3d.push(null);
-            continue;
-        }
-
-        const x = t * RH * Math.cos(θ);
-        const y = t;
-        const z = t * RH * Math.sin(θ);
-        pts3d.push({ x, y, z });
+    const pts=[];
+    for(let i=0;i<=STEPS;i++){
+        const theta=(i/STEPS)*Math.PI*2;
+        const denom=cosA - RH*Math.sin(theta)*sinA;
+        if(Math.abs(denom)<EPS){pts.push(null);continue;}
+        const t=d/denom;
+        if(Math.abs(t)>H*1.02){pts.push(null);continue;}
+        pts.push({
+            x: t*RH*Math.cos(theta),
+            y: t,
+            z: t*RH*Math.sin(theta)
+        });
     }
 
-    /* Disegna con linee continue (spezzando sui null) */
-    for (let i = 0; i < pts3d.length - 1; i++) {
-        const a = pts3d[i], b = pts3d[i+1];
-        if (!a || !b) continue;
-        /* Evita segmenti troppo lunghi (artefatti sui salti dell'iperbole) */
-        const dx = b.x-a.x, dy = b.y-a.y, dz = b.z-a.z;
-        const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
-        if (dist > 0.3) continue;
-        addLine(parent, a.x, a.y, a.z, b.x, b.y, b.z, color, 1.0);
+    // Disegna segmenti continui (gap sui null e sui jump)
+    for(let i=0;i<pts.length-1;i++){
+        const A2=pts[i], B=pts[i+1];
+        if(!A2||!B) continue;
+        const dx=B.x-A2.x, dy=B.y-A2.y, dz=B.z-A2.z;
+        if(dx*dx+dy*dy+dz*dz > JUMP*JUMP) continue; // salto iperbole
+        line(parent, A2.x,A2.y,A2.z, B.x,B.y,B.z, col, 1.0);
     }
 
-    /* Glow attorno alla curva */
-    for (let i = 0; i < pts3d.length; i += 6) {
-        const p = pts3d[i];
-        if (!p) continue;
-        const g = document.createElement('a-sphere');
-        g.setAttribute('position', `${p.x} ${p.y} ${p.z}`);
-        g.setAttribute('radius', '0.022');
-        g.setAttribute('color', color);
-        g.setAttribute('opacity', '0.28');
-        g.setAttribute('shader', 'flat');
+    // Glow sottile sopra la curva (ogni 4 punti)
+    for(let i=0;i<pts.length;i+=4){
+        const p=pts[i]; if(!p) continue;
+        const g=document.createElement('a-sphere');
+        g.setAttribute('position',`${p.x} ${p.y} ${p.z}`);
+        g.setAttribute('radius','0.018'); g.setAttribute('color',col);
+        g.setAttribute('opacity','0.30'); g.setAttribute('shader','flat');
         parent.appendChild(g);
     }
-
-    /* Punto più vicino al piano (indicatore del tipo di conica) */
-    const validPts = pts3d.filter(p => p !== null);
-    if (validPts.length > 0) {
-        /* Centroide della curva */
-        const cx3 = validPts.reduce((s,p) => s + p.x, 0) / validPts.length;
-        const cy3 = validPts.reduce((s,p) => s + p.y, 0) / validPts.length;
-        const cz3 = validPts.reduce((s,p) => s + p.z, 0) / validPts.length;
-        const c3 = document.createElement('a-sphere');
-        c3.setAttribute('position', `${cx3} ${cy3} ${cz3}`);
-        c3.setAttribute('radius', '0.018');
-        c3.setAttribute('color', color);
-        c3.setAttribute('shader', 'flat');
-        parent.appendChild(c3);
-    }
 }
 
-/* ============================================================
-   HELPER: addLine
-   ============================================================ */
-function addLine(parent, x1, y1, z1, x2, y2, z2, color, opacity) {
-    const l = document.createElement('a-entity');
-    l.setAttribute('line', `start:${x1} ${y1} ${z1}; end:${x2} ${y2} ${z2}; color:${color}; opacity:${opacity}`);
-    parent.appendChild(l);
+/* ---- HELPER line ---- */
+function line(parent,x1,y1,z1,x2,y2,z2,col,op){
+    const e=document.createElement('a-entity');
+    e.setAttribute('line',`start:${x1} ${y1} ${z1};end:${x2} ${y2} ${z2};color:${col};opacity:${op}`);
+    parent.appendChild(e);
 }
 
-/* ============================================================
+/* ================================================================
    ANIMATION LOOP
-   ============================================================ */
-function animationLoop() {
-    animFrameCount++;
+   ================================================================ */
+function loop(){
+    frameCount++;
 
-    /* Persistenza marker */
-    if (!markerFound && state.visible) {
-        markerLostFrames++;
-        if (markerLostFrames >= PERSIST_FRAMES) {
-            state.visible = false;
+    // Persistenza marker
+    if(!markerFound&&state.visible){
+        lostFrames++;
+        if(lostFrames>=PERSIST){
+            state.visible=false;
             document.getElementById('statusOverlay').classList.remove('hidden');
-            if (state.phase === 'explore') hideExploreUI();
+            if(state.phase==='explore') hideExploreUI();
         }
     }
 
-    /* Animazione parametri (fase dettaglio) */
-    if (state.animating && state.phase === 'detail' && state.visible) {
-        state.animTime += 0.014;
-        const c = CONICS[state.currentConic];
-        const p = state.params[state.currentConic];
-
-        c.params.forEach((pm, i) => {
-            const mid = (pm.min + pm.max) / 2;
-            const amp = (pm.max - pm.min) / 3;
-            p[pm.id] = mid + Math.sin(state.animTime + i * 0.9) * amp;
-            const sl = document.getElementById(`sl_${pm.id}`);
-            const sv = document.getElementById(`sv_${pm.id}`);
-            if (sl) sl.value = p[pm.id];
-            if (sv) sv.textContent = p[pm.id].toFixed(2);
+    // Animazione parametri
+    if(state.animating&&state.phase==='detail'){
+        state.animTime+=0.014;
+        const c=CONICS[state.conic], p=state.params[state.conic];
+        c.params.forEach((pm,i)=>{
+            const mid=(pm.min+pm.max)/2, amp=(pm.max-pm.min)/3;
+            p[pm.id]=mid+Math.sin(state.animTime+i*.9)*amp;
+            const sl=document.getElementById(`sl_${pm.id}`);
+            const sv=document.getElementById(`sv_${pm.id}`);
+            if(sl)sl.value=p[pm.id];
+            if(sv)sv.textContent=p[pm.id].toFixed(2);
         });
-
-        /* Canvas si aggiorna ogni frame durante animazione */
-        updateDetailUI();
-        drawConicCanvas();
+        syncDetailUI(); drawCanvas();
     }
 
-    requestAnimationFrame(animationLoop);
+    requestAnimationFrame(loop);
 }
 
-/* ============================================================
+/* ================================================================
    START
-   ============================================================ */
-document.readyState === 'loading'
-    ? document.addEventListener('DOMContentLoaded', init)
-    : init();
+   ================================================================ */
+document.readyState==='loading'
+    ?document.addEventListener('DOMContentLoaded',init)
+    :init();
 
 })();
 </script>
